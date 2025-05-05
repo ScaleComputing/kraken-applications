@@ -1,0 +1,384 @@
+type: Application
+version: "1.0.0"
+metadata:
+  name: "k3s-single-node-{{ app_id }}"
+  labels:
+    - k3s
+    - single-node
+    - pytest
+spec:
+  resources:
+    - type: virdomain
+      name: "k3s-controlplane-schedulable-{{ app_id }}"
+      spec:
+        description: Single-node k3s cluster
+        cpu: 2
+        memory: "4294967296"  # 4GB
+        machine_type: "uefi"
+        storage_devices:
+          - name: disk1
+            type: virtio_disk
+            source: "ubuntu_k3s_base"
+            boot: 1
+            capacity: 10000000000  # 10GB
+        network_devices:
+          - name: eth0
+            type: virtio
+        tags:
+          - pytest
+          - k3s
+          - single-node
+        state: running
+        cloud_init_data:
+          user_data: |
+            #cloud-config
+            package_update: true
+            package_upgrade: true
+            packages:
+              - curl
+              - wget
+              - apt-transport-https
+              - ca-certificates
+              - gnupg
+              - lsb-release
+              - qemu-guest-agent
+              - open-iscsi
+              - nfs-common
+              - cloud-guest-utils
+              - gdisk
+
+            # --- Add these modules to resize the root partition/filesystem ---
+            growpart:
+              mode: auto   # Automatically detect device and partition containing root
+              devices: ['/'] # Target the root filesystem's underlying partition
+            resizefs:
+              device: /    # Target the root filesystem for resizing
+            # --- End of resize modules ---
+            
+            # Set root password
+            chpasswd:
+              list: |
+                root:testpassword123
+              expire: false
+            
+            # Create a user with password
+            users:
+              - name: admin
+                primary_group: admin       
+                plain_text_passwd: 'testpassword123'
+                lock_passwd: false
+                shell: /bin/bash
+                sudo: ALL=(ALL) NOPASSWD:ALL
+                ssh_import_id: ["gh:haljac"]
+                groups: sudo, adm
+
+            # Enable the qemu-guest-agent
+            runcmd:
+              # Start and enable qemu-guest-agent
+              - systemctl enable qemu-guest-agent
+              - systemctl start qemu-guest-agent
+              - systemctl status qemu-guest-agent
+              
+              # Configure kernel parameters required for k3s
+              - echo "net.ipv4.ip_forward = 1" > /etc/sysctl.d/90-k3s.conf
+              - echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.d/90-k3s.conf
+              - echo "net.bridge.bridge-nf-call-ip6tables = 1" >> /etc/sysctl.d/90-k3s.conf
+              - sysctl -p /etc/sysctl.d/90-k3s.conf
+              
+              # Install k3s as a single-node cluster
+              - curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+              
+              # Verify k3s is running
+              - sleep 30  # Give k3s time to start
+              - kubectl get nodes
+
+            # Create a monitoring stack to verify k3s is working
+            write_files:
+              - path: /var/lib/rancher/k3s/server/manifests/monitoring-stack.yaml
+                content: |
+                  apiVersion: v1
+                  kind: Namespace
+                  metadata:
+                    name: monitoring
+                  ---
+                  # RBAC for Prometheus (ClusterRole, ServiceAccount in monitoring, ClusterRoleBinding)
+                  apiVersion: rbac.authorization.k8s.io/v1
+                  kind: ClusterRole
+                  metadata:
+                     name: prometheus-monitoring
+                  rules:
+                  - apiGroups: [""]
+                    resources:
+                    - nodes
+                    - nodes/proxy
+                    - services
+                    - endpoints
+                    - pods
+                    verbs: ["get", "list", "watch"]
+                  - apiGroups:
+                    - extensions
+                    resources:
+                    - ingresses
+                    verbs: ["get", "list", "watch"]
+                  - nonResourceURLs: ["/metrics"]
+                    verbs: ["get"]
+                  ---
+                  apiVersion: v1
+                  kind: ServiceAccount
+                  metadata:
+                    name: prometheus-monitoring
+                    namespace: monitoring
+                  ---
+                  apiVersion: rbac.authorization.k8s.io/v1
+                  kind: ClusterRoleBinding
+                  metadata:
+                    name: prometheus-monitoring
+                  roleRef:
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: ClusterRole
+                    name: prometheus-monitoring
+                  subjects:
+                  - kind: ServiceAccount
+                    name: prometheus-monitoring
+                    namespace: monitoring
+                  ---
+                  # Node Exporter DaemonSet
+                  apiVersion: apps/v1
+                  kind: DaemonSet
+                  metadata:
+                    name: node-exporter
+                    namespace: monitoring
+                    labels:
+                      app.kubernetes.io/name: node-exporter
+                  spec:
+                    selector:
+                      matchLabels:
+                        app.kubernetes.io/name: node-exporter
+                    template:
+                      metadata:
+                        labels:
+                          app.kubernetes.io/name: node-exporter
+                      spec:
+                        hostPID: true
+                        hostNetwork: true
+                        tolerations:
+                        - operator: Exists
+                        containers:
+                        - name: node-exporter
+                          image: prom/node-exporter:v1.7.0 # Use a specific version
+                          args:
+                            - '--path.procfs=/host/proc'
+                            - '--path.sysfs=/host/sys'
+                            - '--path.rootfs=/host/root'
+                            - '--web.listen-address=:9100'
+                          ports:
+                          - containerPort: 9100
+                            protocol: TCP
+                            name: metrics
+                            hostPort: 9100
+                          resources:
+                            requests:
+                              cpu: 100m
+                              memory: 30Mi
+                            limits:
+                              cpu: 200m
+                              memory: 50Mi
+                          volumeMounts:
+                          - name: proc
+                            mountPath: /host/proc
+                            readOnly: true
+                          - name: sys
+                            mountPath: /host/sys
+                            readOnly: true
+                          - name: rootfs
+                            mountPath: /host/root
+                            readOnly: true
+                        volumes:
+                        - name: proc
+                          hostPath:
+                            path: /proc
+                        - name: sys
+                          hostPath:
+                            path: /sys
+                        - name: rootfs
+                          hostPath:
+                            path: /
+                  ---
+                  # Node Exporter Service
+                  apiVersion: v1
+                  kind: Service
+                  metadata:
+                    name: node-exporter
+                    namespace: monitoring
+                    labels:
+                      app.kubernetes.io/name: node-exporter
+                  spec:
+                    selector:
+                      app.kubernetes.io/name: node-exporter
+                    ports:
+                    - name: metrics
+                      port: 9100
+                      targetPort: metrics
+                  ---
+                  # Prometheus ConfigMap
+                  apiVersion: v1
+                  kind: ConfigMap
+                  metadata:
+                    name: prometheus-config
+                    namespace: monitoring
+                  data:
+                    prometheus.yml: |
+                      global:
+                        scrape_interval: 15s
+                      scrape_configs:
+                        - job_name: 'prometheus'
+                          static_configs:
+                            - targets: ['localhost:9090']
+                        - job_name: 'node-exporter'
+                          kubernetes_sd_configs:
+                            - role: endpoints
+                          relabel_configs:
+                          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+                            action: keep
+                            regex: monitoring;node-exporter;metrics
+                  ---
+                  # Prometheus Deployment
+                  apiVersion: apps/v1
+                  kind: Deployment
+                  metadata:
+                    name: prometheus
+                    namespace: monitoring
+                    labels:
+                      app.kubernetes.io/name: prometheus
+                  spec:
+                    replicas: 1
+                    selector:
+                      matchLabels:
+                        app.kubernetes.io/name: prometheus
+                    template:
+                      metadata:
+                        labels:
+                          app.kubernetes.io/name: prometheus
+                      spec:
+                        serviceAccountName: prometheus-monitoring
+                        containers:
+                        - name: prometheus
+                          image: prom/prometheus:v2.51.1 # Use a specific version
+                          args:
+                            - '--config.file=/etc/prometheus/prometheus.yml'
+                            - '--storage.tsdb.path=/prometheus'
+                            - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+                            - '--web.console.templates=/usr/share/prometheus/consoles'
+                            - '--web.enable-lifecycle' # Allows hot-reloading config via HTTP POST
+                          ports:
+                          - containerPort: 9090
+                            name: web
+                          volumeMounts:
+                          - name: config-volume
+                            mountPath: /etc/prometheus
+                          - name: data-volume
+                            mountPath: /prometheus
+                        volumes:
+                        - name: config-volume
+                          configMap:
+                            name: prometheus-config
+                        - name: data-volume
+                          emptyDir: {} # Use EmptyDir for simplicity in demo, consider PV for persistence
+                  ---
+                  # Prometheus Service
+                  apiVersion: v1
+                  kind: Service
+                  metadata:
+                    name: prometheus
+                    namespace: monitoring
+                  spec:
+                    selector:
+                      app.kubernetes.io/name: prometheus
+                    ports:
+                    - name: web
+                      port: 9090
+                      targetPort: web
+                  ---
+                  # Grafana Datasource ConfigMap
+                  apiVersion: v1
+                  kind: ConfigMap
+                  metadata:
+                    name: grafana-datasources
+                    namespace: monitoring
+                  data:
+                    prometheus.yaml: |
+                      apiVersion: 1
+                      datasources:
+                      - name: Prometheus
+                        type: prometheus
+                        url: http://prometheus.monitoring.svc.cluster.local:9090
+                        access: proxy
+                        isDefault: true
+                  ---
+                  # Grafana Deployment
+                  apiVersion: apps/v1
+                  kind: Deployment
+                  metadata:
+                    name: grafana
+                    namespace: monitoring
+                    labels:
+                      app.kubernetes.io/name: grafana
+                  spec:
+                    replicas: 1
+                    selector:
+                      matchLabels:
+                        app.kubernetes.io/name: grafana
+                    template:
+                      metadata:
+                        labels:
+                          app.kubernetes.io/name: grafana
+                      spec:
+                        containers:
+                        - name: grafana
+                          image: grafana/grafana:10.4.2 # Use a specific version
+                          ports:
+                          - containerPort: 3000
+                            name: http
+                          env:
+                            # Default admin user/pass: admin/admin
+                            # Consider changing these via env vars for real deployments
+                            - name: GF_SECURITY_ADMIN_USER
+                              value: admin
+                            - name: GF_SECURITY_ADMIN_PASSWORD
+                              value: admin # CHANGE THIS in production
+                          volumeMounts:
+                          - name: datasources
+                            mountPath: /etc/grafana/provisioning/datasources
+                          - name: storage
+                            mountPath: /var/lib/grafana
+                        volumes:
+                        - name: datasources
+                          configMap:
+                            name: grafana-datasources
+                        - name: storage
+                          emptyDir: {} # Use EmptyDir for simplicity, consider PV
+                  ---
+                  # Grafana Service (NodePort)
+                  apiVersion: v1
+                  kind: Service
+                  metadata:
+                    name: grafana
+                    namespace: monitoring
+                  spec:
+                    type: NodePort
+                    selector:
+                      app.kubernetes.io/name: grafana
+                    ports:
+                    - name: http
+                      port: 3000       # Port inside the cluster
+                      targetPort: http # Port on the Grafana container
+                      nodePort: 32000  # Port exposed on the Node's IP
+
+          meta_data: |
+            instance-id: k3s-single-node-{{ app_id }}
+            local-hostname: k3s-controlplane-schedulable-{{ app_id }}
+  assets:
+    - name: ubuntu_k3s_base
+      type: virtual_disk
+      format: raw
+      url: "https://storage.googleapis.com/demo-bucket-lfm/focal-server-cloudimg-amd64.img" 
