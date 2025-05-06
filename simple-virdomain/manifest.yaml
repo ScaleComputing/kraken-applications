@@ -1,7 +1,7 @@
 version: 1
 type: Application
 metadata:
-  name:
+  name: simple-virdomain
 spec:
   assets:
     - name: test-disk

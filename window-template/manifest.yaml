@@ -2,6 +2,8 @@ version: "1"
 type: Application
 metadata:
   name: window-template-demo
+  labels:
+    - Administrator:Scale2025
 spec:
   resources:
     - type: virdomain

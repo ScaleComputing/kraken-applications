@@ -2,6 +2,8 @@ version: "1"
 type: Application
 metadata:
   name: linux-template-demo
+  labels:
+    - admin:Scale2025
 spec:
   resources:
     - type: virdomain
