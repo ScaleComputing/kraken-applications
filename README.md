@@ -1,6 +1,6 @@
 # Kraken Applications
 
-# A collection of reference Kraken manifests that can be used to provision a variety of applications.
+A collection of reference Kraken manifests that can be used to provision a variety of applications.
 
 ## TOC
 
@@ -12,7 +12,7 @@
 
 ## VirDomain
 
-[k3s single node](k3s-single-node/manifest.yaml)
+- [Simple VirDomain](simple-virdomain/manifest.yaml)
 
 ## Block Device
 
@@ -26,8 +26,8 @@
 
 ## Cloud-Init
 
-- [k3s single node](k3s-single-node/manifest.yaml)
+- [Single node k3s](single-node-k3s/manifest.yaml)
 
 ## Apps
 
-- [k3s single node](k3s-single-node/manifest.yaml)
+- [Single node k3s](single-node-k3s/manifest.yaml)

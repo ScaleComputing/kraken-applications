@@ -1,7 +1,7 @@
 type: Application
 version: "1.0.0"
 metadata:
-  name: "k3s-single-node-{{ app_id }}"
+  name: "k3s-single-node-demo"
   labels:
     - k3s
     - single-node
@@ -9,7 +9,7 @@ metadata:
 spec:
   resources:
     - type: virdomain
-      name: "k3s-controlplane-schedulable-{{ app_id }}"
+      name: "k3s-controlplane-schedulable-demo"
       spec:
         description: Single-node k3s cluster
         cpu: 2
@@ -375,8 +375,8 @@ spec:
                       nodePort: 32000  # Port exposed on the Node's IP
 
           meta_data: |
-            instance-id: k3s-single-node-{{ app_id }}
-            local-hostname: k3s-controlplane-schedulable-{{ app_id }}
+            instance-id: k3s-single-node-demo
+            local-hostname: k3s-controlplane-schedulable-demo
   assets:
     - name: ubuntu_k3s_base
       type: virtual_disk
