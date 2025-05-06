@@ -1,0 +1,32 @@
+version: "1"
+type: Application
+metadata:
+  name: linux-template-demo
+spec:
+  resources:
+    - type: virdomain
+      name: linux-template-demo
+      spec:
+        description: Linux template
+        cpu: 0
+        memory: "4294967296" # 4G
+        storage_devices:
+          - name: disk2
+            type: virtio_disk
+            capacity: 50000000000 # 50G
+            source: "fedora_disk"
+            boot: 1
+        network_devices:
+          - name: eth0
+            type: virtio
+        tags:
+          - template
+          - fedora
+          - linux
+        state: shutoff
+        machine_type: uefi
+  assets:
+    - name: fedora_disk
+      type: virtual_disk
+      format: raw
+      url: http://vm-stor2.lab.local/Public/large-file-manager/linux_template.img

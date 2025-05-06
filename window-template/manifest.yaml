@@ -1,0 +1,32 @@
+version: "1"
+type: Application
+metadata:
+  name: window-template-demo
+spec:
+  resources:
+    - type: virdomain
+      name: window-template-demo
+      spec:
+        description: Window Template
+        os: window
+        cpu: 0
+        memory: "4294967296"
+        storage_devices:
+          - name: disk1
+            type: virtio_disk
+            source: "window_disk"
+            boot: 1
+            capacity: 100000000000 # 100G
+        network_devices:
+          - name: eth0
+            type: virtio
+        tags:
+          - template
+          - window
+        state: shutoff
+        machine_type: tpm
+  assets:
+    - name: window_disk
+      type: virtual_disk
+      format: raw
+      url: http://vm-stor2.lab.local/Public/large-file-manager/win22_server.img

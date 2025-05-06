@@ -1,0 +1,35 @@
+version: 1
+type: Application
+metadata:
+  name:
+spec:
+  assets:
+    - name: test-disk
+      type: virtual_disk
+      format: raw
+      url: https://storage.googleapis.com/demo-bucket-lfm/netboot.xyz.img
+  resources:
+    - name:
+      type: virdomain
+      spec:
+        description: A simple VM for testing
+        cpu: 2
+        memory: 100000000
+        machine_type: uefi
+        storage_devices:
+          - name: cdrom1
+            type: ide_cdrom
+            boot: 1
+          - name: disk1
+            source: test-disk
+            boot: 2
+          - name: disk2
+            type: virtio_disk
+            capacity: 100000000000
+        network_devices:
+          - name: nic1
+            type: virtio
+        tags:
+          - kraken
+          - test
+        state: running
