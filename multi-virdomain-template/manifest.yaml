@@ -1,0 +1,57 @@
+version: "1"
+type: Application
+metadata:
+  name: multi-virdomain-template-demo
+spec:
+  resources:
+    - type: virdomain
+      name: window-template-demo
+      spec:
+        description: Window Template
+        os: window
+        cpu: 0
+        memory: "4294967296"
+        storage_devices:
+          - name: disk1
+            type: virtio_disk
+            source: "window_disk"
+            boot: 1
+            capacity: 100000000000 # 100G
+        network_devices:
+          - name: eth0
+            type: virtio
+        tags:
+          - template
+          - window
+        state: shutoff
+        machine_type: tpm
+    - type: virdomain
+      name: linux-template-demo
+      spec:
+        description: Linux template
+        cpu: 0
+        memory: "4294967296" # 4G
+        storage_devices:
+          - name: disk2
+            type: virtio_disk
+            capacity: 50000000000 # 50G
+            source: "fedora_disk"
+            boot: 1
+        network_devices:
+          - name: eth0
+            type: virtio
+        tags:
+          - template
+          - fedora
+          - linux
+        state: shutoff
+        machine_type: uefi
+  assets:
+    - name: fedora_disk
+      type: virtual_disk
+      format: raw
+      url: http://vm-stor2.lab.local/Public/large-file-manager/linux_template.img
+    - name: window_disk
+      type: virtual_disk
+      format: raw
+      url: http://vm-stor2.lab.local/Public/large-file-manager/win22_server.img
