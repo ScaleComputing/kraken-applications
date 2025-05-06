@@ -8,7 +8,7 @@ spec:
       name: window-template-demo
       spec:
         description: Window Template
-        os: window
+        os: windows
         cpu: 0
         memory: "4294967296"
         storage_devices:
