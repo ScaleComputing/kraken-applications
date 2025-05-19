@@ -1,0 +1,154 @@
+type: Application
+version: "1.0.0"
+metadata:
+  name: "nvidia-docker-gpu-app-{{ app_id }}"
+  labels:
+    - nvidia
+    - docker
+    - gpu
+spec:
+  resources:
+    - type: virdomain
+      name: "nvidia-docker-gpu-{{ app_id }}"
+      spec:
+        description: VM with Nvidia Drivers, Docker, and YOLO container
+        cpu: 8
+        memory: "12894967296"
+        machine_type: "bios"
+        storage_devices:
+          - name: disk1
+            type: virtio_disk
+            source: "ubuntu_gpu_base"
+            boot: 1
+            capacity: 30000000000
+        network_devices:
+          - name: eth0
+            type: virtio
+        tags:
+          - nvidia
+          - docker
+          - gpu-app
+          - THEGPU
+        state: running
+        cloud_init_data:
+          user_data: |
+            #cloud-config
+            package_update: true
+            package_upgrade: true
+            packages:
+              - curl
+              - wget
+              - apt-transport-https
+              - ca-certificates
+              - gnupg
+              - lsb-release
+              - qemu-guest-agent
+              - cloud-guest-utils
+              - gdisk
+              # Needed for adding repos
+              - software-properties-common
+              # Build tools potentially needed for drivers/docker
+              - build-essential
+              # nvidia-persistenced is installed as a dependency of cuda-drivers
+
+            # --- Add these modules to resize the root partition/filesystem ---
+            growpart:
+              mode: auto
+              devices: ['/']
+            resizefs:
+              device: /
+            # --- End of resize modules ---
+
+            # Set root password
+            chpasswd:
+              list: |
+                root:testpassword123
+              expire: false
+
+            # Create a user with password and docker access
+            users:
+              - name: admin
+                primary_group: admin
+                plain_text_passwd: 'testpassword123'
+                lock_passwd: false
+                shell: /bin/bash
+                sudo: ALL=(ALL) NOPASSWD:ALL
+                ssh_import_id: ["gh:haljac"]
+                groups: sudo, adm, docker # Add user to docker group
+
+            # Write the systemd service file for the YOLO container
+            write_files:
+            - path: /etc/systemd/system/yolo-stream.service
+              permissions: '0644'
+              content: |
+                [Unit]
+                Description=YOLO Stream Docker Container
+                Requires=docker.service
+                After=network-online.target docker.service nvidia-persistenced.service
+
+                [Service]
+                Restart=always
+                TimeoutStartSec=300
+                ExecStartPre=-/usr/bin/docker stop yolo-stream-container
+                ExecStartPre=-/usr/bin/docker rm yolo-stream-container
+                ExecStartPre=/usr/bin/docker pull halja7/yolo-stream:latest
+                ExecStartPre=/bin/sleep 10 # Add a delay before starting container
+                ExecStart=/usr/bin/docker run --name yolo-stream-container --gpus all -p 5050:5050 halja7/yolo-stream:latest
+                ExecStop=/usr/bin/docker stop yolo-stream-container
+
+                [Install]
+                WantedBy=multi-user.target
+
+            # Enable the qemu-guest-agent and perform installations/configurations
+            runcmd:
+              # Start and enable qemu-guest-agent
+              - systemctl enable qemu-guest-agent
+              - systemctl start qemu-guest-agent
+
+              # --- Install Nvidia Driver Dependencies ---
+              # Add Nvidia repo (Using CUDA Network Repo for drivers - targeting ubuntu2204 for noble)
+              - wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb -O /tmp/cuda-keyring.deb
+              - dpkg -i /tmp/cuda-keyring.deb
+              - add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /"
+              - apt-get update
+
+              # Install latest cuda (yolov11 runs better with CUDA)
+              - apt-get install -y cuda-drivers
+
+              # --- Install Docker ---
+              - apt-get install -y ca-certificates curl
+              - install -m 0755 -d /etc/apt/keyrings
+              - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+              - chmod a+r /etc/apt/keyrings/docker.asc
+              - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+              - apt-get update
+              - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+              # --- Install Nvidia Container Toolkit ---
+              - curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+              - curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+              - apt-get update
+              - apt-get install -y nvidia-container-toolkit
+              # Configure Docker to use Nvidia runtime
+              - nvidia-ctk runtime configure --runtime=docker
+              - systemctl restart docker # Restart Docker *after* nvidia-ctk configuration
+
+              # --- Enable Services ---
+              - systemctl enable nvidia-persistenced.service # Enable persistence daemon
+              - systemctl enable yolo-stream.service # Enable the service to start on boot
+
+            Reboot is required after driver installation for them to load
+            power_state:
+              mode: reboot
+              message: Rebooting after Nvidia driver and Docker installation
+              timeout: 120
+              condition: true # Ensures reboot happens
+
+          meta_data: |
+            instance-id: nvidia-docker-gpu-{{ app_id }}
+            local-hostname: nvidia-docker-gpu-{{ app_id }}
+  assets:
+    - name: ubuntu_gpu_base
+      type: virtual_disk
+      format: raw
+      url: "https://storage.googleapis.com/demo-bucket-lfm/noble-server-cloudimg-amd64.img" # Using noble (24.04)
