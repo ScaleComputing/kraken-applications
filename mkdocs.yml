@@ -1,5 +1,7 @@
+---
 site_name: Kraken Applications
-site_description: Interactive documentation for Kraken manifest specifications and examples
+site_description: >-
+  Interactive documentation for Kraken manifest specifications and examples
 site_author: Scale Computing
 site_url: https://jackhall.github.io/kraken-applications/
 
@@ -58,7 +60,8 @@ theme:
 
 plugins:
   - search:
-      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+      separator: >-
+        [\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])
   - minify:
       minify_html: true
   - git-revision-date-localized:
@@ -113,26 +116,26 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting Started:
-    - Overview: getting-started/overview.md
-    - Quick Start: getting-started/quickstart.md
-    - Installation: getting-started/installation.md
+      - Overview: getting-started/overview.md
+      - Quick Start: getting-started/quickstart.md
+      - Installation: getting-started/installation.md
   - Manifest Specification:
-    - Overview: spec/overview.md
-    - Schema Reference: spec/schema.md
-    - Metadata: spec/metadata.md
-    - Assets: spec/assets.md
-    - Resources: spec/resources.md
-    - VirDomain: spec/virdomain.md
-    - Cloud-Init: spec/cloud-init.md
+      - Overview: spec/overview.md
+      - Schema Reference: spec/schema.md
+      - Metadata: spec/metadata.md
+      - Assets: spec/assets.md
+      - Resources: spec/resources.md
+      - VirDomain: spec/virdomain.md
+      - Cloud-Init: spec/cloud-init.md
   - Examples:
-    - Basic Examples: examples/basic.md
-    - Linux Templates: examples/linux.md
-    - Windows Templates: examples/windows.md
-    - Multi-VM Applications: examples/multi-vm.md
-    - Kubernetes: examples/kubernetes.md
-    - GPU Applications: examples/gpu.md
+      - Basic Examples: examples/basic.md
+      - Linux Templates: examples/linux.md
+      - Windows Templates: examples/windows.md
+      - Multi-VM Applications: examples/multi-vm.md
+      - Kubernetes: examples/kubernetes.md
+      - GPU Applications: examples/gpu.md
   - Best Practices:
-    - General Guidelines: best-practices/general.md
+      - General Guidelines: best-practices/general.md
 
 extra:
   version:
@@ -145,12 +148,12 @@ extra:
     - icon: fontawesome/brands/docker
       link: https://hub.docker.com/u/scalecomputing
   generator: false
-  
+
   # Scale Computing branding
   company:
     name: Scale Computing
     url: https://www.scalecomputing.com
-  
+
   # Analytics (if needed later)
   analytics:
     feedback:
@@ -166,7 +169,9 @@ extra:
           data: 0
           note: >-
             Thanks for your feedback! Help us improve this page by
-            <a href="https://github.com/jackhall/kraken-applications/issues/new" target="_blank" rel="noopener">telling us what you found unhelpful</a>.
+            <a href="https://github.com/jackhall/kraken-applications/issues/new"
+            target="_blank" rel="noopener">telling us what you found
+            unhelpful</a>.
 
 extra_css:
   - stylesheets/extra.css
@@ -174,8 +179,10 @@ extra_css:
 extra_javascript:
   - javascripts/extra.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - >-
+    https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 copyright: |
-  &copy; 2024 <a href="https://www.scalecomputing.com" target="_blank" rel="noopener">Scale Computing</a> &middot;
+  &copy; 2024 <a href="https://www.scalecomputing.com" target="_blank"
+  rel="noopener">Scale Computing</a> &middot;
   <a href="#__consent">Change cookie settings</a>
