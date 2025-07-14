@@ -1,0 +1,466 @@
+/* Custom styles for Kraken Applications documentation */
+/* Scale Computing brand colors */
+:root {
+    --sc-primary-accent: #0097a7;
+    --sc-secondary-accent: #00acc1;
+    --sc-primary-blue: #0066cc;
+    --sc-secondary-blue: #4a90e2;
+    --sc-dark-gray: #2c3e50;
+    --sc-medium-gray: #7f8c8d;
+    --sc-light-gray: #ecf0f1;
+    --sc-success-green: #27ae60;
+    --sc-warning-yellow: #f39c12;
+    --sc-error-red: #e74c3c;
+}
+
+/* Enhanced code blocks */
+.highlight {
+    margin: 1.5em 0;
+}
+
+.highlight pre {
+    border-radius: 0.5rem;
+    border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* Better table styling */
+.md-typeset table:not([class]) {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.md-typeset table:not([class]) th {
+    background-color: var(--sc-primary-accent);
+    font-weight: 600;
+    color: white;
+}
+
+.md-typeset table:not([class]) td {
+    border-bottom: 1px solid var(--sc-light-gray);
+}
+
+/* Improved admonition styles with better contrast */
+.md-typeset .admonition {
+    border-radius: 0.5rem;
+    border-left: 4px solid;
+}
+
+/* Warning admonitions with better contrast */
+.md-typeset .admonition.warning {
+    background-color: #fff8e1;
+    border-left-color: var(--sc-warning-yellow);
+    color: #8a6914;
+}
+
+.md-typeset .admonition.warning .admonition-title {
+    background-color: #fff3c4;
+    color: #663c00;
+    font-weight: 600;
+}
+
+/* Note admonitions */
+.md-typeset .admonition.note {
+    background-color: #e3f2fd;
+    border-left-color: var(--sc-primary-blue);
+    color: #1565c0;
+}
+
+.md-typeset .admonition.note .admonition-title {
+    background-color: #bbdefb;
+    color: #0d47a1;
+    font-weight: 600;
+}
+
+/* Tip admonitions */
+.md-typeset .admonition.tip {
+    background-color: #e8f5e8;
+    border-left-color: var(--sc-success-green);
+    color: #1b5e20;
+}
+
+.md-typeset .admonition.tip .admonition-title {
+    background-color: #c8e6c9;
+    color: #0d5016;
+    font-weight: 600;
+}
+
+/* Danger admonitions */
+.md-typeset .admonition.danger {
+    background-color: #ffebee;
+    border-left-color: var(--sc-error-red);
+    color: #c62828;
+}
+
+.md-typeset .admonition.danger .admonition-title {
+    background-color: #ffcdd2;
+    color: #b71c1c;
+    font-weight: 600;
+}
+
+/* Custom navigation styles */
+.md-nav__item--active > .md-nav__link {
+    font-weight: 600;
+    color: var(--sc-primary-accent);
+}
+
+.md-nav__link:hover {
+    color: var(--sc-primary-accent);
+}
+
+/* Enhanced search results */
+.md-search-result__teaser {
+    color: var(--md-default-fg-color--light);
+}
+
+/* Better inline code styling */
+.md-typeset code {
+    background-color: var(--md-code-bg-color);
+    border-radius: 0.2rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.85em;
+}
+
+/* Improved blockquote styling */
+.md-typeset blockquote {
+    border-left: 4px solid var(--sc-primary-accent);
+    margin: 1.5em 0;
+    padding: 1rem;
+    background-color: var(--md-default-bg-color);
+    border-radius: 0.5rem;
+    border: 1px solid var(--sc-primary-accent);
+    color: var(--md-default-fg-color);
+}
+
+/* Custom button styling */
+.md-button {
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    background-color: var(--sc-primary-accent);
+    color: white;
+    border: none;
+}
+
+.md-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 151, 167, 0.3);
+    background-color: var(--sc-secondary-accent);
+}
+
+.md-button.md-button--primary {
+    background-color: var(--sc-primary-blue);
+}
+
+.md-button.md-button--primary:hover {
+    background-color: var(--sc-secondary-blue);
+    box-shadow: 0 4px 8px rgba(0, 102, 204, 0.3);
+}
+
+/* Links styling */
+.md-typeset a {
+    color: var(--sc-primary-accent);
+}
+
+.md-typeset a:hover {
+    color: var(--sc-secondary-accent);
+}
+
+/* Header styling - Fix contrast issues */
+.md-typeset h1 {
+    color: var(--md-default-fg-color);
+    border-bottom: 2px solid var(--sc-primary-accent);
+    padding-bottom: 0.5rem;
+}
+
+.md-typeset h2 {
+    color: var(--md-default-fg-color);
+    border-bottom: 1px solid var(--sc-light-gray);
+    padding-bottom: 0.25rem;
+}
+
+.md-typeset h3 {
+    color: var(--md-default-fg-color);
+}
+
+.md-typeset h4 {
+    color: var(--md-default-fg-color);
+}
+
+.md-typeset h5 {
+    color: var(--md-default-fg-color);
+}
+
+.md-typeset h6 {
+    color: var(--md-default-fg-color);
+}
+
+/* Header navigation - Fix contrast */
+.md-header {
+    background-color: var(--sc-dark-gray);
+}
+
+.md-header-nav__button {
+    color: white !important;
+}
+
+.md-header-nav__title {
+    color: white !important;
+}
+
+.md-header-nav__title .md-header-nav__topic {
+    color: white !important;
+}
+
+.md-header__title {
+    color: white !important;
+}
+
+.md-header__title .md-header__topic {
+    color: white !important;
+}
+
+.md-header-nav__topic .md-ellipsis {
+    color: white !important;
+}
+
+.md-header .md-header-nav__title--active {
+    color: white !important;
+}
+
+/* Additional header text selectors */
+.md-header * {
+    color: white !important;
+}
+
+.md-header a {
+    color: white !important;
+}
+
+.md-header .md-header-nav__title, 
+.md-header .md-header-nav__title *,
+.md-header .md-header__title,
+.md-header .md-header__title * {
+    color: white !important;
+}
+
+/* Navigation text contrast fixes */
+.md-nav__title {
+    color: var(--md-default-fg-color);
+}
+
+.md-nav__list .md-nav__item {
+    color: var(--md-default-fg-color);
+}
+
+.md-nav__link {
+    color: var(--md-default-fg-color);
+}
+
+/* Content text contrast */
+.md-content__inner {
+    color: var(--md-default-fg-color);
+}
+
+.md-typeset {
+    color: var(--md-default-fg-color);
+}
+
+/* Footer styling */
+.md-footer {
+    background-color: var(--sc-dark-gray);
+}
+
+.md-footer-meta {
+    background-color: var(--sc-medium-gray);
+}
+
+/* Enhanced syntax highlighting for YAML */
+.language-yaml .highlight .na {
+    color: #c678dd;
+}
+
+.language-yaml .highlight .s {
+    color: #98c379;
+}
+
+.language-yaml .highlight .nb {
+    color: #e06c75;
+}
+
+/* Custom spacing for better readability */
+.md-typeset h1 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.md-typeset h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.md-typeset h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Footer improvements */
+.md-footer {
+    margin-top: 3rem;
+}
+
+/* Custom styling for manifest examples */
+.manifest-example {
+    background-color: var(--md-default-bg-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    border: 2px solid var(--sc-primary-accent);
+    color: var(--md-default-fg-color);
+}
+
+/* Resource type badges */
+.resource-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0.1rem;
+}
+
+.resource-badge.virdomain {
+    background-color: var(--sc-primary-accent);
+    color: white;
+    border: 1px solid var(--sc-secondary-accent);
+}
+
+.resource-badge.asset {
+    background-color: var(--sc-primary-blue);
+    color: white;
+    border: 1px solid var(--sc-secondary-blue);
+}
+
+.resource-badge.cloud-init {
+    background-color: var(--sc-success-green);
+    color: white;
+    border: 1px solid #229954;
+}
+
+/* Dark mode specific styles */
+[data-md-color-scheme="slate"] .resource-badge.virdomain {
+    background-color: var(--sc-primary-accent);
+    color: white;
+}
+
+[data-md-color-scheme="slate"] .resource-badge.asset {
+    background-color: var(--sc-primary-blue);
+    color: white;
+}
+
+[data-md-color-scheme="slate"] .resource-badge.cloud-init {
+    background-color: var(--sc-success-green);
+    color: white;
+}
+
+/* Dark mode fixes for contrast */
+[data-md-color-scheme="slate"] .memory-calculator {
+    background-color: var(--md-default-bg-color);
+    color: var(--md-default-fg-color);
+    border-color: var(--sc-primary-accent);
+}
+
+[data-md-color-scheme="slate"] .memory-calculator input {
+    background-color: var(--md-default-bg-color);
+    color: var(--md-default-fg-color);
+    border-color: var(--sc-medium-gray);
+}
+
+[data-md-color-scheme="slate"] .manifest-example {
+    background-color: var(--md-default-bg-color);
+    color: var(--md-default-fg-color);
+    border-color: var(--sc-primary-accent);
+}
+
+[data-md-color-scheme="slate"] .md-typeset blockquote {
+    background-color: var(--md-default-bg-color);
+    color: var(--md-default-fg-color);
+    border-color: var(--sc-primary-accent);
+}
+
+[data-md-color-scheme="slate"] .validation-warnings {
+    background-color: #2d3748 !important;
+    color: #e2e8f0 !important;
+    border-color: #666 !important;
+}
+
+[data-md-color-scheme="slate"] .validation-warnings strong {
+    color: #f7fafc !important;
+}
+
+/* Validation warnings styling */
+.validation-warnings {
+    background-color: #f8f9fa !important;
+    border: 1px solid #ddd !important;
+    border-radius: 0.5rem !important;
+    padding: 0.75rem !important;
+    margin-top: 0.5rem !important;
+    font-size: 0.9em !important;
+    color: #495057 !important;
+}
+
+.validation-warnings strong {
+    color: #212529 !important;
+}
+
+/* Memory calculator styling */
+.memory-calculator {
+    background-color: var(--md-default-bg-color);
+    border: 2px solid var(--sc-primary-accent);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.memory-calculator h4 {
+    color: var(--md-default-fg-color);
+    margin-bottom: 0.5rem;
+}
+
+.memory-calculator input {
+    border: 1px solid var(--sc-medium-gray);
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    margin-left: 0.5rem;
+    background-color: var(--md-default-bg-color);
+    color: var(--md-default-fg-color);
+}
+
+.memory-calculator code {
+    background-color: var(--md-code-bg-color);
+    color: var(--md-default-fg-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 76.1875em) {
+    .md-nav--primary .md-nav__title {
+        background-color: var(--md-primary-fg-color);
+    }
+}
+
+/* Print styles */
+@media print {
+    .md-header,
+    .md-footer,
+    .md-nav,
+    .md-search,
+    .md-sidebar {
+        display: none !important;
+    }
+    
+    .md-content {
+        margin: 0;
+        padding: 0;
+    }
+}

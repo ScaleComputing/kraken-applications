@@ -205,6 +205,12 @@ Common issues and solutions:
 - **Cloud-init errors**: Validate YAML syntax in cloud-init data
 - **Network connectivity**: Ensure network device types are supported
 
+## Documentation
+
+For comprehensive guides, API reference, and interactive examples, visit our documentation site:
+
+**[https://jackhall.github.io/kraken-applications/](https://jackhall.github.io/kraken-applications/)**
+
 ## Contributing
 
 When adding new examples:
@@ -213,6 +219,23 @@ When adding new examples:
 3. Add appropriate tags and labels
 4. Test manifests before submission
 5. Update this README with new examples
+
+### Documentation Development
+
+To contribute to the documentation site, you'll need:
+- [uv](https://docs.astral.sh/uv/) for Python package management
+- Basic familiarity with MkDocs
+
+```bash
+# Install dependencies and start development server
+make dev
+
+# Run quality checks
+make check
+
+# Build documentation
+make build
+```
 
 ## Related Documentation
 

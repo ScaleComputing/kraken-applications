@@ -1,0 +1,29 @@
+[project]
+name = "kraken-applications-docs"
+version = "1.0.0"
+description = "Documentation for Kraken Applications - reference manifests and interactive guides"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Scale Computing", email = "support@scalecomputing.com"},
+]
+requires-python = ">=3.9"
+dependencies = [
+    "mkdocs>=1.5.3",
+    "mkdocs-material>=9.5.3",
+    "mkdocs-git-revision-date-localized-plugin>=1.2.4",
+    "mkdocs-git-authors-plugin>=0.7.2",
+    "mkdocs-minify-plugin>=0.7.1",
+    "pymdown-extensions>=10.7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "yamllint>=1.35.1",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/jackhall/kraken-applications"
+"Documentation" = "https://jackhall.github.io/kraken-applications/"
+"Repository" = "https://github.com/jackhall/kraken-applications"
+"Bug Tracker" = "https://github.com/jackhall/kraken-applications/issues"

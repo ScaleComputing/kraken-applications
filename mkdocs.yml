@@ -1,0 +1,188 @@
+site_name: Kraken Applications
+site_description: Interactive documentation for Kraken manifest specifications and examples
+site_author: Scale Computing
+site_url: https://jackhall.github.io/kraken-applications/
+
+repo_name: kraken-applications
+repo_url: https://github.com/jackhall/kraken-applications
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+    - content.action.view
+    - announce.dismiss
+
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - git-authors
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: jackhall
+      repo: kraken-applications
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Overview: getting-started/overview.md
+    - Quick Start: getting-started/quickstart.md
+    - Installation: getting-started/installation.md
+  - Manifest Specification:
+    - Overview: spec/overview.md
+    - Schema Reference: spec/schema.md
+    - Metadata: spec/metadata.md
+    - Assets: spec/assets.md
+    - Resources: spec/resources.md
+    - VirDomain: spec/virdomain.md
+    - Cloud-Init: spec/cloud-init.md
+  - Examples:
+    - Basic Examples: examples/basic.md
+    - Linux Templates: examples/linux.md
+    - Windows Templates: examples/windows.md
+    - Multi-VM Applications: examples/multi-vm.md
+    - Kubernetes: examples/kubernetes.md
+    - GPU Applications: examples/gpu.md
+  - Best Practices:
+    - General Guidelines: best-practices/general.md
+    - Security: best-practices/security.md
+    - Performance: best-practices/performance.md
+    - Troubleshooting: best-practices/troubleshooting.md
+  - API Reference:
+    - Core API: api/core.md
+    - Deployment: api/deployment.md
+    - Management: api/management.md
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/jackhall/kraken-applications
+    - icon: fontawesome/solid/globe
+      link: https://www.scalecomputing.com
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/u/scalecomputing
+  generator: false
+  
+  # Scale Computing branding
+  company:
+    name: Scale Computing
+    url: https://www.scalecomputing.com
+  
+  # Analytics (if needed later)
+  analytics:
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >-
+            Thanks for your feedback! Help us improve this page by
+            <a href="https://github.com/jackhall/kraken-applications/issues/new" target="_blank" rel="noopener">telling us what you found unhelpful</a>.
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+copyright: |
+  &copy; 2024 <a href="https://www.scalecomputing.com" target="_blank" rel="noopener">Scale Computing</a> &middot;
+  <a href="#__consent">Change cookie settings</a>
