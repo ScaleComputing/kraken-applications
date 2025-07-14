@@ -1,23 +1,24 @@
 # GPU Applications
 
-This section demonstrates how to deploy GPU-accelerated applications using Kraken manifests. These examples cover NVIDIA GPU setup, Docker container deployment, and machine learning workloads.
+This section demonstrates GPU-enabled virtual machine deployment using Kraken manifests. The example shows how to create VMs with NVIDIA GPU support, Docker, and containerized GPU workloads.
 
 ## Overview
 
-GPU applications require specialized configuration including:
+GPU applications in Kraken provide:
 
-- **NVIDIA drivers** and runtime installation
-- **Docker with GPU support** (NVIDIA Container Toolkit)
-- **Proper VM sizing** for GPU workloads
-- **Cloud-init automation** for complex setup
+- **NVIDIA GPU support** with driver installation
+- **Docker container runtime** with GPU access
+- **Automated GPU driver setup** via cloud-init
+- **Container orchestration** for GPU workloads
+- **Production-ready configurations** with systemd services
 
-## YOLO Object Detection
+## YOLO Object Detection Application
 
-This example deploys a GPU-accelerated YOLO object detection application using Docker containers.
+This example deploys a complete GPU-enabled virtual machine running a YOLO object detection container. The manifest is based on the actual `yolo-object-detection/manifest.yaml` in this repository.
 
-### Complete Manifest
+### YOLO Object Detection Manifest
 
-```yaml title="yolo-gpu-app.yaml"
+```yaml title="yolo-object-detection/manifest.yaml"
 type: Application
 version: "1.0.0"
 metadata:
@@ -26,22 +27,21 @@ metadata:
     - nvidia
     - docker
     - gpu
-    - machine-learning
 spec:
   assets:
     - name: ubuntu_gpu_base
       type: virtual_disk
       format: raw
-      url: "https://storage.googleapis.com/demo-bucket/noble-server-cloudimg-amd64.img"
+      url: "https://storage.googleapis.com/demo-bucket-lfm/noble-server-cloudimg-amd64.img"
   
   resources:
     - type: virdomain
       name: "nvidia-docker-gpu-{{ app_id }}"
       spec:
-        description: "VM with NVIDIA Drivers, Docker, and YOLO container"
+        description: VM with Nvidia Drivers, Docker, and YOLO container
         cpu: 8
         memory: "12894967296"  # ~12 GB
-        machine_type: "bios"
+        machine_type: "bios"   # GPU VMs often use BIOS
         
         storage_devices:
           - name: disk1
@@ -58,7 +58,7 @@ spec:
           - nvidia
           - docker
           - gpu-app
-          - machine-learning
+          - THEGPU
         
         state: running
         
@@ -88,22 +88,24 @@ spec:
             resizefs:
               device: /
             
-            # Set up user accounts
+            # Set root password
             chpasswd:
               list: |
-                root:securepassword123
+                root:testpassword123
               expire: false
             
+            # Create admin user with docker access
             users:
               - name: admin
                 primary_group: admin
-                plain_text_passwd: 'securepassword123'
+                plain_text_passwd: 'testpassword123'
                 lock_passwd: false
                 shell: /bin/bash
                 sudo: ALL=(ALL) NOPASSWD:ALL
+                ssh_import_id: ["gh:haljac"]
                 groups: sudo, adm, docker
             
-            # Create systemd service for YOLO container
+            # YOLO container systemd service
             write_files:
             - path: /etc/systemd/system/yolo-stream.service
               permissions: '0644'
@@ -112,7 +114,7 @@ spec:
                 Description=YOLO Stream Docker Container
                 Requires=docker.service
                 After=network-online.target docker.service nvidia-persistenced.service
-                
+
                 [Service]
                 Restart=always
                 TimeoutStartSec=300
@@ -122,7 +124,7 @@ spec:
                 ExecStartPre=/bin/sleep 10
                 ExecStart=/usr/bin/docker run --name yolo-stream-container --gpus all -p 5050:5050 halja7/yolo-stream:latest
                 ExecStop=/usr/bin/docker stop yolo-stream-container
-                
+
                 [Install]
                 WantedBy=multi-user.target
             
@@ -152,6 +154,8 @@ spec:
               - curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
               - apt-get update
               - apt-get install -y nvidia-container-toolkit
+              
+              # Configure Docker for GPU access
               - nvidia-ctk runtime configure --runtime=docker
               - systemctl restart docker
               
@@ -159,10 +163,10 @@ spec:
               - systemctl enable nvidia-persistenced.service
               - systemctl enable yolo-stream.service
             
-            # Reboot after driver installation
+            # Reboot to load drivers
             power_state:
               mode: reboot
-              message: "Rebooting after NVIDIA driver installation"
+              message: Rebooting after Nvidia driver and Docker installation
               timeout: 120
               condition: true
           
@@ -171,298 +175,132 @@ spec:
             local-hostname: nvidia-docker-gpu-{{ app_id }}
 ```
 
-### Key Components
+### Key Features
 
-#### Resource Allocation
-- **CPU**: 8 cores for GPU workload processing
-- **Memory**: ~12 GB for ML model loading
-- **Storage**: 30 GB for OS, drivers, and container images
+This manifest demonstrates several important GPU application patterns:
 
-#### GPU Setup Process
-1. **Driver Installation**: NVIDIA CUDA drivers via repository
-2. **Docker Setup**: Docker CE with GPU support
-3. **Container Runtime**: NVIDIA Container Toolkit
-4. **Service Management**: Systemd service for application
+#### GPU Hardware Support
+- **BIOS machine type**: Often required for GPU passthrough
+- **High memory allocation**: 12 GB for GPU workloads
+- **Multi-core CPU**: 8 cores for processing
 
-#### Application Deployment
-- **Container Image**: Pre-built YOLO detection service
-- **GPU Access**: `--gpus all` flag for full GPU access
-- **Network Exposure**: Port 5050 for web interface
-- **Auto-restart**: Systemd ensures service reliability
+#### Driver Installation
+- **CUDA drivers**: Latest drivers from NVIDIA repository
+- **Container toolkit**: NVIDIA Container Toolkit for Docker GPU access
+- **Persistence daemon**: Ensures GPU state persistence
 
-## Machine Learning Workstation
+#### Container Orchestration
+- **Systemd service**: Manages YOLO container lifecycle
+- **GPU access**: `--gpus all` flag enables GPU access in container
+- **Network exposure**: Port 5050 for web interface
+- **Automatic restart**: Container restarts on failure
 
-A more general-purpose GPU workstation for ML development.
+#### Security and Access
+- **SSH key import**: GitHub SSH key integration
+- **User management**: Admin user with sudo access
+- **Password authentication**: For initial access
 
-### Manifest
+## Accessing the Application
 
-```yaml title="ml-workstation.yaml"
-type: Application
-version: "1.0.0"
-metadata:
-  name: "ml-workstation-{{ user_id }}"
-  labels:
-    - nvidia
-    - machine-learning
-    - development
-spec:
-  assets:
-    - name: ubuntu_ml_base
-      type: virtual_disk
-      format: raw
-      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04-ml.img"
-  
-  resources:
-    - type: virdomain
-      name: "ml-workstation-{{ user_id }}"
-      spec:
-        description: "GPU-enabled ML development workstation"
-        cpu: 12
-        memory: "34359738368"  # 32 GB
-        machine_type: "uefi"
-        
-        storage_devices:
-          - name: os-disk
-            type: virtio_disk
-            source: "ubuntu_ml_base"
-            boot: 1
-            capacity: 107374182400  # 100 GB
-          - name: data-disk
-            type: virtio_disk
-            capacity: 536870912000  # 500 GB
-        
-        network_devices:
-          - name: eth0
-            type: virtio
-        
-        tags:
-          - ml-workstation
-          - gpu-enabled
-          - development
-        
-        state: running
-        
-        cloud_init_data:
-          user_data: |
-            #cloud-config
-            package_update: true
-            
-            packages:
-              - python3-pip
-              - python3-venv
-              - git
-              - vim
-              - htop
-              - nvidia-smi
-              - jupyter-notebook
-            
-            # Create ML development environment
-            runcmd:
-              - pip3 install torch torchvision torchaudio tensorflow jupyter pandas numpy scikit-learn matplotlib seaborn
-              - mkdir -p /home/ubuntu/notebooks
-              - mkdir -p /home/ubuntu/datasets
-              - chown -R ubuntu:ubuntu /home/ubuntu/
-              
-              # Mount data disk
-              - mkfs.ext4 /dev/vdb
-              - mount /dev/vdb /home/ubuntu/datasets
-              - echo "/dev/vdb /home/ubuntu/datasets ext4 defaults 0 0" >> /etc/fstab
-              
-              # Start Jupyter on boot
-              - systemctl enable jupyter
-          
-          meta_data: |
-            instance-id: ml-workstation-{{ user_id }}
-            local-hostname: ml-workstation-{{ user_id }}
-```
+After deployment, you can access the YOLO object detection service:
 
-## GPU Mining/Compute Node
+1. **Web Interface**: `http://vm-ip:5050`
+2. **SSH Access**: `ssh admin@vm-ip` (password: `testpassword123`)
+3. **GPU Status**: Check with `nvidia-smi` command
+4. **Container Status**: `docker ps` to see running containers
 
-High-performance compute node for GPU-intensive workloads.
+## Configuration Options
 
-### Manifest
-
-```yaml title="gpu-compute-node.yaml"
-type: Application
-version: "1.0.0"
-metadata:
-  name: "gpu-compute-{{ node_id }}"
-  labels:
-    - compute
-    - gpu
-    - high-performance
-spec:
-  resources:
-    - type: virdomain
-      name: "gpu-compute-{{ node_id }}"
-      spec:
-        description: "High-performance GPU compute node"
-        cpu: 16
-        memory: "68719476736"  # 64 GB
-        machine_type: "uefi"
-        
-        storage_devices:
-          - name: nvme-disk
-            type: virtio_disk
-            capacity: 107374182400  # 100 GB SSD
-            boot: 1
-        
-        network_devices:
-          - name: eth0
-            type: virtio
-          - name: eth1
-            type: virtio  # Additional network for cluster communication
-        
-        tags:
-          - gpu-compute
-          - high-performance
-          - cluster-node
-        
-        state: running
-        
-        cloud_init_data:
-          user_data: |
-            #cloud-config
-            package_update: true
-            
-            packages:
-              - nvidia-driver-525
-              - cuda-toolkit-12-0
-              - docker.io
-              - docker-compose
-              - monitoring-tools
-            
-            # Optimize for compute workloads
-            runcmd:
-              - nvidia-smi -pm 1  # Enable persistence mode
-              - nvidia-smi -acp 0  # Disable auto-boost
-              - echo "performance" > /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-              
-              # Configure Docker for GPU
-              - nvidia-ctk runtime configure --runtime=docker
-              - systemctl restart docker
-              
-              # Set up monitoring
-              - systemctl enable nvidia-monitoring
-```
-
-## Best Practices for GPU Applications
-
-### 1. Resource Planning
+### Resource Scaling
 
 ```yaml
-# Minimum GPU VM configuration
+# For lighter workloads
 cpu: 4
-memory: "8589934592"   # 8 GB
-storage: 53687091200   # 50 GB
+memory: "8589934592"  # 8 GB
 
-# High-performance GPU configuration
+# For heavier ML workloads  
 cpu: 16
-memory: "68719476736"  # 64 GB
-storage: 214748364800  # 200 GB
+memory: "34359738368"  # 32 GB
 ```
+
+### Storage Allocation
+
+```yaml
+storage_devices:
+  - name: disk1
+    capacity: 30000000000   # 30 GB - minimal
+  - name: disk1  
+    capacity: 107374182400  # 100 GB - recommended
+```
+
+### Container Configuration
+
+```yaml
+# Custom container image
+ExecStartPre=/usr/bin/docker pull your-registry/custom-gpu-app:latest
+ExecStart=/usr/bin/docker run --name gpu-app --gpus all -p 8080:8080 your-registry/custom-gpu-app:latest
+```
+
+## Best Practices
+
+### 1. GPU Requirements
+
+- **Use BIOS machine type** for better GPU compatibility
+- **Allocate sufficient memory** (8GB minimum for GPU workloads)
+- **Plan storage carefully** for model downloads and data
 
 ### 2. Driver Management
 
-```yaml
-# Use specific driver versions for stability
-runcmd:
-  - apt-get install -y nvidia-driver-525  # Specific version
-  - apt-get install -y cuda-toolkit-12-0  # Specific CUDA version
-```
+- **Use official NVIDIA repositories** for driver installation
+- **Install CUDA** for better performance with ML frameworks
+- **Enable persistence daemon** for production stability
 
-### 3. Container Optimization
+### 3. Container Strategy
 
-```yaml
-# Systemd service with proper GPU access
-ExecStart=/usr/bin/docker run --name app --gpus all \
-  --shm-size=1g \
-  --ulimit memlock=-1 \
-  --ulimit stack=67108864 \
-  my-gpu-app:latest
-```
+- **Use systemd services** for container lifecycle management
+- **Implement health checks** and restart policies
+- **Expose necessary ports** for application access
 
-### 4. Monitoring and Maintenance
+### 4. Security Considerations
 
-```yaml
-# Include monitoring tools
-packages:
-  - nvidia-smi
-  - nvtop
-  - htop
-  - iotop
-
-# Enable GPU monitoring
-runcmd:
-  - nvidia-smi -pm 1  # Persistence mode
-  - nvidia-smi -lgc 1400,1400  # Lock GPU clocks
-```
-
-## Performance Considerations
-
-### VM Sizing Guidelines
-
-| Workload Type | CPU Cores | Memory | Storage |
-|---------------|-----------|--------|---------|
-| Light ML | 4-8 | 8-16 GB | 50-100 GB |
-| Heavy ML | 8-16 | 16-64 GB | 100-500 GB |
-| HPC Compute | 16-32 | 32-128 GB | 100-1000 GB |
-
-### Storage Optimization
-
-- **NVMe/SSD**: Use fast storage for model loading
-- **Separate data disk**: Keep datasets on dedicated disk
-- **Adequate capacity**: Plan for model checkpoints and logs
-
-### Network Configuration
-
-- **High bandwidth**: Use multiple network interfaces for cluster workloads
-- **Low latency**: Configure for distributed training scenarios
+- **Change default passwords** before production deployment
+- **Use SSH keys** for authentication
+- **Limit network exposure** to required ports only
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Driver installation fails**
-   - Check Ubuntu version compatibility
-   - Verify secure boot settings
-   - Use specific driver versions
+1. **GPU not detected**: Check machine type and GPU passthrough configuration
+2. **Driver installation fails**: Verify Ubuntu version compatibility
+3. **Container won't start**: Check Docker daemon and GPU runtime configuration
+4. **Performance issues**: Monitor GPU utilization with `nvidia-smi`
 
-2. **Docker GPU access denied**
-   - Ensure nvidia-container-toolkit is installed
-   - Verify Docker configuration
-   - Check user permissions
-
-3. **Container fails to start**
-   - Verify GPU availability with `nvidia-smi`
-   - Check container image compatibility
-   - Review resource allocation
-
-### Debugging Commands
+### Debug Commands
 
 ```bash
 # Check GPU status
 nvidia-smi
 
-# Test Docker GPU access
-docker run --gpus all nvidia/cuda:11.0-base nvidia-smi
-
-# Monitor GPU utilization
-watch nvidia-smi
+# Check Docker GPU access
+docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
 
 # Check container logs
 docker logs yolo-stream-container
+
+# Check service status
+systemctl status yolo-stream.service
 ```
 
 ## Related Examples
 
 - **[Kubernetes GPU Cluster](kubernetes.md#gpu-cluster)** - Orchestrated GPU workloads
-- **[Multi-VM Applications](multi-vm.md)** - Distributed GPU computing
-- **[Basic Examples](basic.md)** - Fundamental VM configuration
+- **[Multi-VM Applications](multi-vm.md)** - Complex deployments with GPU VMs
+- **[Linux Templates](linux.md)** - Base Linux configurations
 
 ## Next Steps
 
-1. **Scale to multi-GPU**: Deploy multiple GPU VMs
-2. **Add monitoring**: Implement GPU metrics collection
-3. **Optimize performance**: Fine-tune for specific workloads
-4. **Implement backup**: Protect valuable ML models and data
+1. **Customize** the container image for your specific GPU workload
+2. **Add monitoring** and logging for production deployments
+3. **Scale** horizontally with multiple GPU VMs
+4. **Integrate** with container orchestration platforms

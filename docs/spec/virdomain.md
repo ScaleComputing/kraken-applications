@@ -412,4 +412,4 @@ storage_devices:
 - **[Assets Reference](assets.md)** - External resource management
 - **[Cloud-Init Guide](cloud-init.md)** - VM initialization
 - **[Examples](../examples/basic.md)** - Real-world configurations
-- **[Best Practices](../best-practices/performance.md)** - Performance optimization
+- **[Best Practices](../best-practices/general.md)** - General guidelines

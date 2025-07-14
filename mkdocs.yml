@@ -133,13 +133,6 @@ nav:
     - GPU Applications: examples/gpu.md
   - Best Practices:
     - General Guidelines: best-practices/general.md
-    - Security: best-practices/security.md
-    - Performance: best-practices/performance.md
-    - Troubleshooting: best-practices/troubleshooting.md
-  - API Reference:
-    - Core API: api/core.md
-    - Deployment: api/deployment.md
-    - Management: api/management.md
 
 extra:
   version:

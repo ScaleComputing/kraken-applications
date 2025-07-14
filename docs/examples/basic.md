@@ -1,356 +1,377 @@
 # Basic Examples
 
-This section provides fundamental examples of Kraken manifests, starting with simple configurations and building up to more complex deployments. Each example includes explanations, best practices, and common variations.
+This section provides fundamental examples of Kraken manifests based on actual examples from this repository. Each example demonstrates core concepts and patterns used in real deployments.
 
 ## Simple Virtual Machine
 
-The most basic Kraken manifest creates a single virtual machine with minimal configuration.
+The most basic Kraken manifest creates a single virtual machine. This example is based on the `simple-virdomain/manifest.yaml` in this repository.
 
-### Example: Basic VM
+### Simple VirDomain Manifest
 
-```yaml title="simple-vm.yaml"
+```yaml title="simple-virdomain/manifest.yaml"
+version: 1
 type: Application
-version: "1.0.0"
 metadata:
-  name: "simple-vm"
-  labels:
-    - "environment:development"
-    - "purpose:testing"
-spec:
-  resources:
-    - type: virdomain
-      name: "test-vm"
-      spec:
-        description: "A simple test virtual machine"
-        cpu: 2
-        memory: "2147483648"  # 2 GB
-        machine_type: "uefi"
-        state: "running"
-        storage_devices:
-          - name: "disk1"
-            type: "virtio_disk"
-            capacity: 21474836480  # 20 GB
-        network_devices:
-          - name: "eth0"
-            type: "virtio"
-        tags:
-          - "test"
-          - "development"
-```
-
-### Key Components
-
-- **CPU**: 2 virtual cores
-- **Memory**: 2 GB RAM
-- **Storage**: 20 GB VirtIO disk
-- **Network**: Single VirtIO network interface
-- **Boot**: UEFI machine type for modern OS support
-
-## VM with External Asset
-
-This example shows how to use external disk images as VM boot sources.
-
-### Example: VM with Asset
-
-```yaml title="vm-with-asset.yaml"
-type: Application
-version: "1.0.0"
-metadata:
-  name: "vm-with-external-disk"
+  name: simple-virdomain
 spec:
   assets:
-    - name: "ubuntu-image"
-      type: "virtual_disk"
-      format: "raw"
-      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04.img"
+    - name: test-disk
+      type: virtual_disk
+      format: raw
+      url: https://storage.googleapis.com/demo-bucket-lfm/netboot.xyz.img
+  
   resources:
-    - type: virdomain
-      name: "ubuntu-vm"
+    - name:  # Empty name will be auto-generated
+      type: virdomain
       spec:
-        description: "Ubuntu VM using external disk image"
+        description: A simple VM for testing
         cpu: 2
-        memory: "4294967296"  # 4 GB
-        machine_type: "uefi"
+        memory: 100000000  # ~95 MB
+        machine_type: uefi
+        
         storage_devices:
-          - name: "root-disk"
-            type: "virtio_disk"
-            source: "ubuntu-image"  # Reference to asset
+          - name: cdrom1
+            type: ide_cdrom
             boot: 1
-            capacity: 32212254720  # 30 GB
-        network_devices:
-          - name: "eth0"
-            type: "virtio"
-        state: "running"
-```
-
-### Asset Management
-
-- **External URL**: Points to publicly accessible disk image
-- **Format**: Supports raw, qcow2, and other formats
-- **Source Reference**: Links storage device to asset by name
-- **Boot Priority**: `boot: 1` makes this the primary boot device
-
-## Multi-Disk Configuration
-
-VMs can have multiple storage devices for different purposes.
-
-### Example: Multi-Disk VM
-
-```yaml title="multi-disk-vm.yaml"
-type: Application
-version: "1.0.0"
-metadata:
-  name: "multi-disk-vm"
-spec:
-  assets:
-    - name: "os-image"
-      type: "virtual_disk"
-      format: "raw"
-      url: "https://storage.googleapis.com/demo-bucket/centos-9.img"
-    - name: "setup-iso"
-      type: "virtual_disk"
-      format: "iso"
-      url: "https://storage.googleapis.com/demo-bucket/setup.iso"
-  resources:
-    - type: virdomain
-      name: "database-server"
-      spec:
-        description: "Database server with multiple disks"
-        cpu: 4
-        memory: "8589934592"  # 8 GB
-        machine_type: "uefi"
-        storage_devices:
-          - name: "os-disk"
-            type: "virtio_disk"
-            source: "os-image"
-            boot: 1
-            capacity: 53687091200  # 50 GB
-          - name: "data-disk"
-            type: "virtio_disk"
-            capacity: 214748364800  # 200 GB
-            boot: 0
-          - name: "setup-cdrom"
-            type: "ide_cdrom"
-            source: "setup-iso"
+          - name: disk1
+            source: test-disk
             boot: 2
+          - name: disk2
+            type: virtio_disk
+            capacity: 100000000000  # ~93 GB
+        
         network_devices:
-          - name: "eth0"
-            type: "virtio"
+          - name: nic1
+            type: virtio
+        
         tags:
-          - "database"
-          - "production"
-        state: "running"
+          - kraken
+          - test
+        
+        state: running
 ```
 
-### Storage Configuration
+### Key Features
 
-- **OS Disk**: Primary boot disk from external image
-- **Data Disk**: Additional storage without external source
-- **CDROM**: ISO image for setup or tools
-- **Boot Order**: Numbered priority (1=primary, 2=secondary, etc.)
+This simple manifest demonstrates:
 
-## Template VM
+#### Asset Management
+- **External disk image**: Uses netboot.xyz image from Google Cloud Storage
+- **Asset reference**: Storage device references the asset by name
 
-Templates are VMs in "shutoff" state, ready for cloning.
+#### Multiple Storage Devices
+- **IDE CD-ROM**: Primary boot device (boot: 1)
+- **Asset disk**: Secondary boot from the netboot.xyz image (boot: 2)  
+- **VirtIO disk**: Large capacity disk for data storage
 
-### Example: Template VM
+#### Basic Configuration
+- **CPU**: 2 virtual cores
+- **Memory**: ~95 MB (minimal allocation)
+- **Network**: Single VirtIO network interface
+- **Machine type**: UEFI for modern boot support
 
-```yaml title="template-vm.yaml"
+## Asset-Only Example
+
+Sometimes you only need to define assets without creating VMs immediately. This example is based on `small-iso/manifest.yaml`.
+
+### ISO Asset Manifest
+
+```yaml title="small-iso/manifest.yaml"
+version: "1"
 type: Application
-version: "1.0.0"
 metadata:
-  name: "ubuntu-template"
-  labels:
-    - "type:template"
-    - "os:ubuntu"
+  name: just-an-iso-demo
 spec:
   assets:
-    - name: "ubuntu-base"
-      type: "virtual_disk"
-      format: "raw"
-      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04-base.img"
-  resources:
-    - type: virdomain
-      name: "ubuntu-template"
-      spec:
-        description: "Ubuntu 22.04 template for cloning"
-        cpu: 2
-        memory: "4294967296"  # 4 GB
-        machine_type: "uefi"
-        storage_devices:
-          - name: "template-disk"
-            type: "virtio_disk"
-            source: "ubuntu-base"
-            boot: 1
-            capacity: 32212254720  # 30 GB
-        network_devices:
-          - name: "eth0"
-            type: "virtio"
-        tags:
-          - "template"
-          - "ubuntu"
-          - "base-image"
-        state: "shutoff"  # Template state
+    - name: test-disk
+      type: virtual_disk
+      format: iso
+      url: http://vm-stor2.lab.local/Public/large-file-manager/alpine-virt-3.21.2-x86_64.iso
 ```
 
-### Template Benefits
+### Use Case
 
-- **Rapid Deployment**: Clone instead of full OS installation
-- **Consistency**: All instances use same base configuration
-- **Efficiency**: Reduced deployment time and network usage
-- **Standardization**: Common base for team deployments
+This pattern is useful for:
+- **Preparing assets** for later VM creation
+- **Sharing common assets** across multiple applications
+- **Testing asset availability** before deployment
 
-## Dynamic Naming
+## Template VMs
 
-Use template variables for dynamic resource naming.
+Template VMs are created in `shutoff` state for cloning. This example is based on `linux-template/manifest.yaml`.
 
-### Example: Dynamic Names
+### Linux Template Manifest
 
-```yaml title="dynamic-vm.yaml"
+```yaml title="linux-template/manifest.yaml"
+version: "1"
 type: Application
-version: "1.0.0"
 metadata:
-  name: "web-server-{{ app_id }}"
+  name: linux-template-demo
   labels:
-    - "instance:{{ app_id }}"
-    - "environment:{{ env }}"
+    - admin:Scale2025
 spec:
+  assets:
+    - name: fedora_disk
+      type: virtual_disk
+      format: raw
+      url: http://vm-stor2.lab.local/Public/large-file-manager/linux_template.img
+  
   resources:
     - type: virdomain
-      name: "web-{{ app_id }}"
+      name: linux-template-demo
       spec:
-        description: "Web server instance {{ app_id }}"
-        cpu: 2
-        memory: "4294967296"
-        machine_type: "uefi"
+        description: Linux template
+        cpu: 0  # Templates often use 0 CPU
+        memory: "4294967296"  # 4 GB
+        machine_type: uefi
+        
         storage_devices:
-          - name: "web-disk-{{ app_id }}"
-            type: "virtio_disk"
-            capacity: 42949672960  # 40 GB
+          - name: disk2
+            type: virtio_disk
+            capacity: 50000000000  # 50 GB
+            source: "fedora_disk"
+            boot: 1
+        
         network_devices:
-          - name: "eth0"
-            type: "virtio"
+          - name: eth0
+            type: virtio
+        
         tags:
-          - "web-server"
-          - "instance-{{ app_id }}"
-        state: "running"
+          - template
+          - fedora
+          - linux
+        
+        state: shutoff  # Template state for cloning
 ```
 
-### Template Variables
+### Template Best Practices
 
-- **{{ app_id }}**: Unique instance identifier
-- **{{ env }}**: Environment name (dev, staging, prod)
-- **{{ team }}**: Team or project identifier
-- **{{ region }}**: Deployment region
+#### Resource Allocation
+- **CPU: 0**: Template VMs often use 0 CPU since they don't run
+- **Adequate memory**: 4 GB provides good base for most workloads
+- **Standard storage**: 50 GB accommodates OS and applications
 
-## Resource Sizing Guide
+#### State Management
+- **shutoff state**: Templates should be stopped for cloning
+- **Descriptive tags**: Help identify and categorize templates
+- **Clear naming**: Include "template" in name and tags
 
-### Small VM (Development)
+## Windows Template
+
+Windows VMs require different configuration. This example is based on `window-template/manifest.yaml`.
+
+### Windows Template Manifest
+
+```yaml title="window-template/manifest.yaml"
+version: "1"
+type: Application
+metadata:
+  name: window-template-demo
+  labels:
+    - Administrator:Scale2025
+spec:
+  assets:
+    - name: window_disk
+      type: virtual_disk
+      format: raw
+      url: http://vm-stor2.lab.local/Public/large-file-manager/win22_server.img
+  
+  resources:
+    - type: virdomain
+      name: window-template-demo
+      spec:
+        description: Window Template
+        os: windows  # OS type specification
+        cpu: 0
+        memory: "4294967296"  # 4 GB
+        machine_type: tpm  # TPM required for Windows
+        
+        storage_devices:
+          - name: disk1
+            type: virtio_disk
+            source: "window_disk"
+            boot: 1
+            capacity: 100000000000  # 100 GB
+        
+        network_devices:
+          - name: eth0
+            type: virtio
+        
+        tags:
+          - template
+          - window
+        
+        state: shutoff
+```
+
+### Windows-Specific Configuration
+
+#### Machine Type
+- **TPM machine type**: Required for Windows security features
+- **Larger storage**: 100 GB accommodates Windows OS requirements
+
+#### Labels and Tags
+- **Administrator labels**: Windows-specific administrative metadata
+- **OS specification**: Explicit `os: windows` field
+
+## Multi-VM Application
+
+Deploy multiple VMs in a single manifest. This example is based on `multi-virdomain-template/manifest.yaml`.
+
+### Multi-VirDomain Manifest
+
+```yaml title="multi-virdomain-template/manifest.yaml"
+version: "1"
+type: Application
+metadata:
+  name: multi-virdomain-template-demo
+  labels:
+    - Administrator:Scale2025
+    - admin:Scale2025
+spec:
+  assets:
+    - name: fedora_disk
+      type: virtual_disk
+      format: raw
+      url: http://vm-stor2.lab.local/Public/large-file-manager/linux_template.img
+    - name: window_disk
+      type: virtual_disk
+      format: raw
+      url: http://vm-stor2.lab.local/Public/large-file-manager/win22_server.img
+  
+  resources:
+    # Windows VM
+    - type: virdomain
+      name: window-template-demo
+      spec:
+        description: Window Template
+        os: windows
+        cpu: 0
+        memory: "4294967296"
+        machine_type: tmp
+        storage_devices:
+          - name: disk1
+            type: virtio_disk
+            source: "window_disk"
+            boot: 1
+            capacity: 100000000000  # 100 GB
+        network_devices:
+          - name: eth0
+            type: virtio
+        tags:
+          - template
+          - window
+        state: shutoff
+    
+    # Linux VM
+    - type: virdomain
+      name: linux-template-demo
+      spec:
+        description: Linux template
+        cpu: 0
+        memory: "4294967296"  # 4 GB
+        machine_type: uefi
+        storage_devices:
+          - name: disk2
+            type: virtio_disk
+            capacity: 50000000000  # 50 GB
+            source: "fedora_disk"
+            boot: 1
+        network_devices:
+          - name: eth0
+            type: virtio
+        tags:
+          - template
+          - fedora
+          - linux
+        state: shutoff
+```
+
+### Multi-VM Patterns
+
+#### Shared Assets
+- **Asset reuse**: Both VMs can reference the same assets
+- **Efficient storage**: Common base images shared across VMs
+
+#### Mixed Operating Systems
+- **Different machine types**: TPM for Windows, UEFI for Linux
+- **OS-specific configuration**: Memory and storage optimized per OS
+- **Consistent networking**: Same network device patterns
+
+## Common Configuration Patterns
+
+### Memory Specification
 
 ```yaml
-cpu: 1
-memory: "1073741824"      # 1 GB
-capacity: 21474836480     # 20 GB
+# Always use string format for memory
+memory: "4294967296"  # 4 GB
+memory: "8589934592"  # 8 GB
+memory: "100000000"   # ~95 MB (minimal)
 ```
 
-### Medium VM (Testing)
+### Storage Device Types
 
 ```yaml
-cpu: 2
-memory: "4294967296"      # 4 GB
-capacity: 53687091200     # 50 GB
+storage_devices:
+  - name: cdrom1
+    type: ide_cdrom     # For CD/DVD images
+  - name: disk1
+    type: virtio_disk   # High-performance disk
+    source: asset_name  # Reference to asset
+    boot: 1            # Boot priority
+    capacity: 50000000000  # Size in bytes
 ```
 
-### Large VM (Production)
+### Network Configuration
 
 ```yaml
-cpu: 4
-memory: "8589934592"      # 8 GB
-capacity: 107374182400    # 100 GB
+network_devices:
+  - name: eth0
+    type: virtio  # High-performance network
+  - name: nic1
+    type: virtio  # Alternative naming
 ```
 
-### Extra Large VM (Database)
+### Machine Types
 
 ```yaml
-cpu: 8
-memory: "17179869184"     # 16 GB
-capacity: 214748364800    # 200 GB
+machine_type: uefi    # Modern Linux systems
+machine_type: tpm     # Windows with security features
+machine_type: bios    # Legacy systems or GPU VMs
 ```
 
-## Common Patterns
+## Best Practices from Examples
 
-### 1. Development VM
+### 1. Version Specification
+- Use `version: "1"` or `version: 1` consistently
+- Some examples use `version: "1.0.0"` for semantic versioning
 
-```yaml
-cpu: 2
-memory: "2147483648"      # 2 GB
-state: "running"
-tags: ["development", "temporary"]
-```
+### 2. Asset Management
+- **Descriptive names**: Use clear asset names like `fedora_disk`, `window_disk`
+- **Appropriate formats**: `raw` for disk images, `iso` for installation media
+- **Reliable URLs**: Use stable storage locations
 
-### 2. Production VM
+### 3. Resource Naming
+- **Unique names**: Each VM needs a unique name within the manifest
+- **Descriptive**: Include purpose and type (e.g., `linux-template-demo`)
+- **Consistent**: Follow naming conventions across your organization
 
-```yaml
-cpu: 4
-memory: "8589934592"      # 8 GB
-state: "running"
-tags: ["production", "monitored", "backup"]
-```
+### 4. State Management
+- **Templates**: Use `state: shutoff` for VMs intended for cloning
+- **Active VMs**: Use `state: running` for operational workloads
+- **CPU allocation**: Templates can use `cpu: 0`
 
-### 3. Template VM
+## Related Examples
 
-```yaml
-cpu: 2
-memory: "4294967296"      # 4 GB
-state: "shutoff"
-tags: ["template", "base-image"]
-```
-
-## Best Practices
-
-### 1. Resource Naming
-
-- Use descriptive names that indicate purpose
-- Include environment in names for clarity
-- Use consistent naming conventions
-
-### 2. Memory Allocation
-
-- Always specify memory in bytes as strings
-- Plan for OS overhead (reserve ~10% extra)
-- Consider application memory requirements
-
-### 3. Storage Planning
-
-- Size boot disks appropriately for OS and applications
-- Use separate disks for data when possible
-- Consider backup and snapshot requirements
-
-### 4. Network Configuration
-
-- Use VirtIO for better performance
-- Plan IP addressing strategy
-- Consider security group requirements
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Memory format errors**: Use string format for memory values
-2. **Boot failures**: Check boot order and device configuration
-3. **Asset access failures**: Verify URL accessibility
-4. **Resource conflicts**: Ensure unique names within manifest
-
-### Validation Tips
-
-- Test manifests in development first
-- Use schema validation tools
-- Check asset URLs independently
-- Monitor deployment logs
+- **[Linux Templates](linux.md)** - Linux-specific configurations
+- **[Windows Templates](windows.md)** - Windows-specific configurations  
+- **[Multi-VM Applications](multi-vm.md)** - Complex multi-tier applications
+- **[Kubernetes](kubernetes.md)** - Container orchestration deployments
 
 ## Next Steps
 
-- **[Linux Templates](linux.md)** - Linux-specific configurations
-- **[Windows Templates](windows.md)** - Windows VM examples
-- **[Multi-VM Applications](multi-vm.md)** - Complex deployments
-- **[Cloud-Init Guide](../spec/cloud-init.md)** - VM initialization
+1. **Choose a base example** that matches your use case
+2. **Customize resource allocation** based on your requirements
+3. **Update asset URLs** to point to your images
+4. **Test deployment** in a development environment
+5. **Create templates** for common configurations

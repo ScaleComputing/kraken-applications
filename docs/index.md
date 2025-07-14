@@ -113,7 +113,7 @@ This documentation is organized into several sections:
 - **[Manifest Specification](spec/overview.md)** - Complete API reference
 - **[Examples](examples/basic.md)** - Real-world deployment examples
 - **[Best Practices](best-practices/general.md)** - Optimization and security guides
-- **[API Reference](api/core.md)** - Technical API documentation
+- **[Manifest Specification](spec/overview.md)** - Technical specification documentation
 
 ## Community and Support
 

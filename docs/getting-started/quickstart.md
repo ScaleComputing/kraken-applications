@@ -236,9 +236,8 @@ tags: ["production", "monitored"]
 If you encounter issues:
 
 1. **Check the logs** in Fleet Manager UI
-2. **Review** the [Troubleshooting Guide](../best-practices/troubleshooting.md)
-3. **Browse** [Examples](../examples/basic.md) for similar configurations
-4. **Open an issue** on [GitHub](https://github.com/jackhall/kraken-applications/issues)
+2. **Browse** [Examples](../examples/basic.md) for similar configurations
+3. **Open an issue** on [GitHub](https://github.com/jackhall/kraken-applications/issues)
 
 ## What's Next?
 
@@ -258,8 +257,6 @@ Now that you've deployed your first VM, explore these advanced topics:
 
 ### 🔧 Optimize Your Deployments
 
-- **[Performance Tuning](../best-practices/performance.md)** - Maximize efficiency
-- **[Security Best Practices](../best-practices/security.md)** - Secure your infrastructure
 - **[Cloud-Init Guide](../spec/cloud-init.md)** - Automated configuration
 
 ## Summary

@@ -1,67 +1,64 @@
 # Kubernetes
 
-This section demonstrates how to deploy Kubernetes clusters using Kraken manifests, including single-node K3s installations, multi-node clusters, and specialized Kubernetes workloads.
+This section demonstrates Kubernetes deployment using Kraken manifests. The example shows how to deploy a single-node K3s cluster with monitoring stack, based on the actual `single-node-k3s/manifest.yaml` in this repository.
 
 ## Overview
 
-Kubernetes deployments with Kraken provide:
+Kubernetes applications in Kraken provide:
 
-- **Single-node K3s** for development and testing
-- **Multi-node clusters** for production workloads
-- **Automated setup** with cloud-init
-- **Monitoring integration** (Prometheus, Grafana)
-- **GPU support** for ML workloads
-- **High availability** configurations
+- **Single-node K3s clusters** with monitoring
+- **Automated K3s installation** via cloud-init
+- **Built-in monitoring stack** (Prometheus, Grafana, Node Exporter)
+- **Production-ready configuration** with proper resource allocation
 
 ## Single-Node K3s Cluster
 
-This example deploys a complete single-node Kubernetes cluster using K3s with monitoring stack.
+This example deploys a complete single-node Kubernetes cluster using K3s with a comprehensive monitoring stack. The manifest is based on the actual `single-node-k3s/manifest.yaml` in this repository.
 
 ### K3s Single-Node Manifest
 
-```yaml title="k3s-single-node.yaml"
+```yaml title="single-node-k3s/manifest.yaml"
 type: Application
 version: "1.0.0"
 metadata:
-  name: "k3s-single-node"
+  name: "k3s-single-node-demo"
   labels:
-    - "kubernetes:k3s"
-    - "environment:development"
-    - "monitoring:enabled"
+    - k3s
+    - single-node
+    - pytest
 spec:
   assets:
-    - name: "ubuntu-k3s"
-      type: "virtual_disk"
-      format: "raw"
-      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04-k3s.img"
+    - name: ubuntu_k3s_base
+      type: virtual_disk
+      format: raw
+      url: "https://storage.googleapis.com/demo-bucket-lfm/focal-server-cloudimg-amd64.img"
   
   resources:
-    - type: "virdomain"
-      name: "k3s-master"
+    - type: virdomain
+      name: "k3s-controlplane-schedulable-demo"
       spec:
-        description: "Single-node K3s cluster with monitoring"
-        cpu: 4
-        memory: "8589934592"  # 8 GB
+        description: Single-node k3s cluster
+        cpu: 2
+        memory: "4294967296"  # 4 GB
         machine_type: "uefi"
         
         storage_devices:
-          - name: "k3s-system"
-            type: "virtio_disk"
-            source: "ubuntu-k3s"
+          - name: disk1
+            type: virtio_disk
+            source: "ubuntu_k3s_base"
             boot: 1
-            capacity: 85899345920  # 80 GB
+            capacity: 10000000000  # 10 GB
         
         network_devices:
-          - name: "k3s-net"
-            type: "virtio"
+          - name: eth0
+            type: virtio
         
         tags:
-          - "kubernetes"
-          - "k3s"
-          - "master"
-          - "monitoring"
+          - pytest
+          - k3s
+          - single-node
         
-        state: "running"
+        state: running
         
         cloud_init_data:
           user_data: |
@@ -72,14 +69,13 @@ spec:
             packages:
               - curl
               - wget
-              - git
-              - htop
-              - jq
               - apt-transport-https
               - ca-certificates
               - gnupg
               - lsb-release
               - qemu-guest-agent
+              - open-iscsi
+              - nfs-common
               - cloud-guest-utils
               - gdisk
             
@@ -90,712 +86,423 @@ spec:
             resizefs:
               device: /
             
-            # Create K3s user
+            # Set root password
+            chpasswd:
+              list: |
+                root:testpassword123
+              expire: false
+            
+            # Create admin user
             users:
-              - name: k3s
-                primary_group: k3s
+              - name: admin
+                primary_group: admin
+                plain_text_passwd: 'testpassword123'
+                lock_passwd: false
                 shell: /bin/bash
                 sudo: ALL=(ALL) NOPASSWD:ALL
+                ssh_import_id: ["gh:haljac"]
                 groups: sudo, adm
-                lock_passwd: false
             
             runcmd:
-              # Enable and start qemu-guest-agent
+              # Enable qemu-guest-agent
               - systemctl enable qemu-guest-agent
               - systemctl start qemu-guest-agent
+              - systemctl status qemu-guest-agent
               
-              # Install K3s
-              - curl -sfL https://get.k3s.io | sh -
+              # Configure kernel parameters for k3s
+              - echo "net.ipv4.ip_forward = 1" > /etc/sysctl.d/90-k3s.conf
+              - echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.d/90-k3s.conf
+              - echo "net.bridge.bridge-nf-call-ip6tables = 1" >> /etc/sysctl.d/90-k3s.conf
+              - sysctl -p /etc/sysctl.d/90-k3s.conf
               
-              # Configure kubectl for root
-              - mkdir -p /root/.kube
-              - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
-              - chmod 600 /root/.kube/config
+              # Install k3s as a single-node cluster
+              - curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
               
-              # Configure kubectl for k3s user
-              - mkdir -p /home/k3s/.kube
-              - cp /etc/rancher/k3s/k3s.yaml /home/k3s/.kube/config
-              - chown -R k3s:k3s /home/k3s/.kube
-              - chmod 600 /home/k3s/.kube/config
-              
-              # Install Helm
-              - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-              
-              # Wait for K3s to be ready
+              # Verify k3s is running
               - sleep 30
-              - kubectl wait --for=condition=Ready nodes --all --timeout=300s
-              
-              # Install monitoring stack
-              - helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-              - helm repo add grafana https://grafana.github.io/helm-charts
-              - helm repo update
-              
-              # Create monitoring namespace
-              - kubectl create namespace monitoring
-              
-              # Install Prometheus and Grafana
-              - helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring --set grafana.adminPassword=admin123
-              
-              # Install Node Exporter
-              - helm install node-exporter prometheus-community/prometheus-node-exporter -n monitoring
-              
-              # Create sample application
-              - kubectl create deployment nginx --image=nginx
-              - kubectl expose deployment nginx --port=80 --type=LoadBalancer
+              - kubectl get nodes
+            
+            # Monitoring stack deployment
+            write_files:
+              - path: /var/lib/rancher/k3s/server/manifests/monitoring-stack.yaml
+                content: |
+                  apiVersion: v1
+                  kind: Namespace
+                  metadata:
+                    name: monitoring
+                  ---
+                  # RBAC for Prometheus
+                  apiVersion: rbac.authorization.k8s.io/v1
+                  kind: ClusterRole
+                  metadata:
+                     name: prometheus-monitoring
+                  rules:
+                  - apiGroups: [""]
+                    resources:
+                    - nodes
+                    - nodes/proxy
+                    - services
+                    - endpoints
+                    - pods
+                    verbs: ["get", "list", "watch"]
+                  - apiGroups:
+                    - extensions
+                    resources:
+                    - ingresses
+                    verbs: ["get", "list", "watch"]
+                  - nonResourceURLs: ["/metrics"]
+                    verbs: ["get"]
+                  ---
+                  apiVersion: v1
+                  kind: ServiceAccount
+                  metadata:
+                    name: prometheus-monitoring
+                    namespace: monitoring
+                  ---
+                  apiVersion: rbac.authorization.k8s.io/v1
+                  kind: ClusterRoleBinding
+                  metadata:
+                    name: prometheus-monitoring
+                  roleRef:
+                    apiGroup: rbac.authorization.k8s.io
+                    kind: ClusterRole
+                    name: prometheus-monitoring
+                  subjects:
+                  - kind: ServiceAccount
+                    name: prometheus-monitoring
+                    namespace: monitoring
+                  ---
+                  # Node Exporter DaemonSet
+                  apiVersion: apps/v1
+                  kind: DaemonSet
+                  metadata:
+                    name: node-exporter
+                    namespace: monitoring
+                    labels:
+                      app.kubernetes.io/name: node-exporter
+                  spec:
+                    selector:
+                      matchLabels:
+                        app.kubernetes.io/name: node-exporter
+                    template:
+                      metadata:
+                        labels:
+                          app.kubernetes.io/name: node-exporter
+                      spec:
+                        hostPID: true
+                        hostNetwork: true
+                        tolerations:
+                        - operator: Exists
+                        containers:
+                        - name: node-exporter
+                          image: prom/node-exporter:v1.7.0
+                          args:
+                            - '--path.procfs=/host/proc'
+                            - '--path.sysfs=/host/sys'
+                            - '--path.rootfs=/host/root'
+                            - '--web.listen-address=:9100'
+                          ports:
+                          - containerPort: 9100
+                            protocol: TCP
+                            name: metrics
+                            hostPort: 9100
+                          resources:
+                            requests:
+                              cpu: 100m
+                              memory: 30Mi
+                            limits:
+                              cpu: 200m
+                              memory: 50Mi
+                          volumeMounts:
+                          - name: proc
+                            mountPath: /host/proc
+                            readOnly: true
+                          - name: sys
+                            mountPath: /host/sys
+                            readOnly: true
+                          - name: rootfs
+                            mountPath: /host/root
+                            readOnly: true
+                        volumes:
+                        - name: proc
+                          hostPath:
+                            path: /proc
+                        - name: sys
+                          hostPath:
+                            path: /sys
+                        - name: rootfs
+                          hostPath:
+                            path: /
+                  ---
+                  # Prometheus Deployment
+                  apiVersion: apps/v1
+                  kind: Deployment
+                  metadata:
+                    name: prometheus
+                    namespace: monitoring
+                    labels:
+                      app.kubernetes.io/name: prometheus
+                  spec:
+                    replicas: 1
+                    selector:
+                      matchLabels:
+                        app.kubernetes.io/name: prometheus
+                    template:
+                      metadata:
+                        labels:
+                          app.kubernetes.io/name: prometheus
+                      spec:
+                        serviceAccountName: prometheus-monitoring
+                        containers:
+                        - name: prometheus
+                          image: prom/prometheus:v2.51.1
+                          args:
+                            - '--config.file=/etc/prometheus/prometheus.yml'
+                            - '--storage.tsdb.path=/prometheus'
+                            - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+                            - '--web.console.templates=/usr/share/prometheus/consoles'
+                            - '--web.enable-lifecycle'
+                          ports:
+                          - containerPort: 9090
+                            name: web
+                          volumeMounts:
+                          - name: config-volume
+                            mountPath: /etc/prometheus
+                          - name: data-volume
+                            mountPath: /prometheus
+                        volumes:
+                        - name: config-volume
+                          configMap:
+                            name: prometheus-config
+                        - name: data-volume
+                          emptyDir: {}
+                  ---
+                  # Grafana Deployment
+                  apiVersion: apps/v1
+                  kind: Deployment
+                  metadata:
+                    name: grafana
+                    namespace: monitoring
+                    labels:
+                      app.kubernetes.io/name: grafana
+                  spec:
+                    replicas: 1
+                    selector:
+                      matchLabels:
+                        app.kubernetes.io/name: grafana
+                    template:
+                      metadata:
+                        labels:
+                          app.kubernetes.io/name: grafana
+                      spec:
+                        containers:
+                        - name: grafana
+                          image: grafana/grafana:10.4.2
+                          ports:
+                          - containerPort: 3000
+                            name: http
+                          env:
+                            - name: GF_SECURITY_ADMIN_USER
+                              value: admin
+                            - name: GF_SECURITY_ADMIN_PASSWORD
+                              value: admin
+                          volumeMounts:
+                          - name: datasources
+                            mountPath: /etc/grafana/provisioning/datasources
+                          - name: storage
+                            mountPath: /var/lib/grafana
+                        volumes:
+                        - name: datasources
+                          configMap:
+                            name: grafana-datasources
+                        - name: storage
+                          emptyDir: {}
+                  ---
+                  # Grafana Service (NodePort for external access)
+                  apiVersion: v1
+                  kind: Service
+                  metadata:
+                    name: grafana
+                    namespace: monitoring
+                  spec:
+                    type: NodePort
+                    selector:
+                      app.kubernetes.io/name: grafana
+                    ports:
+                    - name: http
+                      port: 3000
+                      targetPort: http
+                      nodePort: 32000  # Access via node-ip:32000
           
           meta_data: |
-            instance-id: k3s-single-node-001
-            local-hostname: k3s-master
+            instance-id: k3s-single-node-demo
+            local-hostname: k3s-controlplane-schedulable-demo
 ```
 
-### Accessing the Cluster
+### Key Features
 
-After deployment, you can access:
+This manifest demonstrates comprehensive Kubernetes deployment:
 
-- **Kubernetes API**: `kubectl get nodes`
-- **Grafana Dashboard**: `http://node-ip:3000` (admin/admin123)
-- **Prometheus**: `http://node-ip:9090`
-- **Sample Nginx App**: `http://node-ip` (via LoadBalancer)
+#### K3s Installation
+- **Automated installation**: Uses the official K3s installer script
+- **Single-node cluster**: Control plane with scheduling enabled
+- **Kernel configuration**: Sets required networking parameters
+- **Kubeconfig access**: World-readable for easy access
 
-## Multi-Node K3s Cluster
+#### Monitoring Stack
+- **Prometheus**: Metrics collection and storage
+- **Grafana**: Visualization dashboard (admin/admin)
+- **Node Exporter**: System metrics collection
+- **RBAC**: Proper security permissions
 
-This example creates a high-availability K3s cluster with multiple nodes.
+#### Resource Configuration
+- **4 GB RAM**: Adequate for K3s and monitoring
+- **2 CPU cores**: Sufficient for single-node operation
+- **10 GB storage**: Minimal but functional
 
-### Multi-Node K3s Manifest
+#### Security and Access
+- **SSH key import**: GitHub integration for key management
+- **User management**: Admin user with sudo access
+- **Password access**: For initial connection
 
-```yaml title="k3s-multi-node.yaml"
-type: Application
-version: "1.0.0"
-metadata:
-  name: "k3s-multi-node-cluster"
-  labels:
-    - "kubernetes:k3s"
-    - "environment:production"
-    - "ha:enabled"
-spec:
-  assets:
-    - name: "ubuntu-k3s"
-      type: "virtual_disk"
-      format: "raw"
-      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04-k3s.img"
+## Accessing the Cluster
+
+After deployment, you can access the K3s cluster:
+
+1. **SSH Access**: `ssh admin@vm-ip` (password: `testpassword123`)
+2. **Kubectl**: Commands work directly on the node
+3. **Grafana Dashboard**: `http://vm-ip:32000` (admin/admin)
+4. **Prometheus**: Available within cluster
+
+### Kubectl Examples
+
+```bash
+# Check cluster status
+kubectl get nodes
+
+# View running pods
+kubectl get pods --all-namespaces
+
+# Check monitoring namespace
+kubectl get pods -n monitoring
+
+# View services
+kubectl get services -n monitoring
+```
+
+## GPU-Enabled Kubernetes {#gpu-cluster}
+
+For GPU workloads, you can extend the K3s deployment with GPU support. While not included in the base repository examples, you can combine patterns from the YOLO GPU example with K3s:
+
+### Resource Scaling for GPU
+
+```yaml
+# Increase resources for GPU workloads
+cpu: 8
+memory: "17179869184"  # 16 GB
+machine_type: "bios"   # Often better for GPU VMs
+
+# Add GPU-specific packages
+packages:
+  - nvidia-driver-525
+  - nvidia-container-toolkit
+```
+
+## Configuration Options
+
+### Resource Scaling
+
+```yaml
+# Minimal development
+cpu: 2
+memory: "4294967296"   # 4 GB
+capacity: 10000000000  # 10 GB
+
+# Production single-node
+cpu: 4
+memory: "8589934592"   # 8 GB  
+capacity: 53687091200  # 50 GB
+
+# High-performance
+cpu: 8
+memory: "17179869184"  # 16 GB
+capacity: 107374182400 # 100 GB
+```
+
+### K3s Options
+
+```yaml
+# Custom K3s installation
+runcmd:
+  # Disable certain components
+  - curl -sfL https://get.k3s.io | sh -s - --disable traefik --disable servicelb
   
-  resources:
-    # K3s Server (Master) Node
-    - type: "virdomain"
-      name: "k3s-server-01"
-      spec:
-        description: "K3s server node 01"
-        cpu: 4
-        memory: "8589934592"  # 8 GB
-        machine_type: "uefi"
-        
-        storage_devices:
-          - name: "server-disk"
-            type: "virtio_disk"
-            source: "ubuntu-k3s"
-            boot: 1
-            capacity: 85899345920  # 80 GB
-        
-        network_devices:
-          - name: "cluster-net"
-            type: "virtio"
-        
-        tags:
-          - "kubernetes"
-          - "k3s"
-          - "server"
-          - "control-plane"
-        
-        state: "running"
-        
-        cloud_init_data:
-          user_data: |
-            #cloud-config
-            package_update: true
-            packages:
-              - curl
-              - wget
-              - htop
-              - jq
-            
-            # Resize root filesystem
-            growpart:
-              mode: auto
-              devices: ['/']
-            resizefs:
-              device: /
-            
-            runcmd:
-              # Install K3s server
-              - curl -sfL https://get.k3s.io | sh -s - server --cluster-init --token=mytoken123
-              
-              # Configure kubectl
-              - mkdir -p /root/.kube
-              - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
-              - chmod 600 /root/.kube/config
-              
-              # Install Helm
-              - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-          
-          meta_data: |
-            instance-id: k3s-server-01
-            local-hostname: k3s-server-01
-    
-    # Additional K3s Server Node for HA
-    - type: "virdomain"
-      name: "k3s-server-02"
-      spec:
-        description: "K3s server node 02"
-        cpu: 4
-        memory: "8589934592"  # 8 GB
-        machine_type: "uefi"
-        
-        storage_devices:
-          - name: "server-disk"
-            type: "virtio_disk"
-            source: "ubuntu-k3s"
-            boot: 1
-            capacity: 85899345920  # 80 GB
-        
-        network_devices:
-          - name: "cluster-net"
-            type: "virtio"
-        
-        tags:
-          - "kubernetes"
-          - "k3s"
-          - "server"
-          - "control-plane"
-        
-        state: "running"
-        
-        cloud_init_data:
-          user_data: |
-            #cloud-config
-            package_update: true
-            packages:
-              - curl
-              - wget
-              - htop
-              - jq
-            
-            # Resize root filesystem
-            growpart:
-              mode: auto
-              devices: ['/']
-            resizefs:
-              device: /
-            
-            runcmd:
-              # Join as additional server (requires first server IP)
-              - curl -sfL https://get.k3s.io | sh -s - server --server https://192.168.1.10:6443 --token=mytoken123
-              
-              # Configure kubectl
-              - mkdir -p /root/.kube
-              - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
-              - chmod 600 /root/.kube/config
-          
-          meta_data: |
-            instance-id: k3s-server-02
-            local-hostname: k3s-server-02
-    
-    # K3s Agent (Worker) Nodes
-    - type: "virdomain"
-      name: "k3s-agent-01"
-      spec:
-        description: "K3s agent node 01"
-        cpu: 4
-        memory: "8589934592"  # 8 GB
-        machine_type: "uefi"
-        
-        storage_devices:
-          - name: "agent-disk"
-            type: "virtio_disk"
-            source: "ubuntu-k3s"
-            boot: 1
-            capacity: 85899345920  # 80 GB
-        
-        network_devices:
-          - name: "cluster-net"
-            type: "virtio"
-        
-        tags:
-          - "kubernetes"
-          - "k3s"
-          - "agent"
-          - "worker"
-        
-        state: "running"
-        
-        cloud_init_data:
-          user_data: |
-            #cloud-config
-            package_update: true
-            packages:
-              - curl
-              - wget
-              - htop
-            
-            # Resize root filesystem
-            growpart:
-              mode: auto
-              devices: ['/']
-            resizefs:
-              device: /
-            
-            runcmd:
-              # Join as agent (requires server IP)
-              - curl -sfL https://get.k3s.io | K3S_URL=https://192.168.1.10:6443 K3S_TOKEN=mytoken123 sh -
-          
-          meta_data: |
-            instance-id: k3s-agent-01
-            local-hostname: k3s-agent-01
-    
-    - type: "virdomain"
-      name: "k3s-agent-02"
-      spec:
-        description: "K3s agent node 02"
-        cpu: 4
-        memory: "8589934592"  # 8 GB
-        machine_type: "uefi"
-        
-        storage_devices:
-          - name: "agent-disk"
-            type: "virtio_disk"
-            source: "ubuntu-k3s"
-            boot: 1
-            capacity: 85899345920  # 80 GB
-        
-        network_devices:
-          - name: "cluster-net"
-            type: "virtio"
-        
-        tags:
-          - "kubernetes"
-          - "k3s"
-          - "agent"
-          - "worker"
-        
-        state: "running"
-        
-        cloud_init_data:
-          user_data: |
-            #cloud-config
-            package_update: true
-            packages:
-              - curl
-              - wget
-              - htop
-            
-            # Resize root filesystem
-            growpart:
-              mode: auto
-              devices: ['/']
-            resizefs:
-              device: /
-            
-            runcmd:
-              # Join as agent
-              - curl -sfL https://get.k3s.io | K3S_URL=https://192.168.1.10:6443 K3S_TOKEN=mytoken123 sh -
-          
-          meta_data: |
-            instance-id: k3s-agent-02
-            local-hostname: k3s-agent-02
-```
-
-## GPU-Enabled Kubernetes
-
-This example shows a Kubernetes cluster with GPU support for ML workloads.
-
-### GPU Kubernetes Manifest
-
-```yaml title="k3s-gpu-cluster.yaml"
-type: Application
-version: "1.0.0"
-metadata:
-  name: "k3s-gpu-cluster"
-  labels:
-    - "kubernetes:k3s"
-    - "gpu:nvidia"
-    - "workload:ml"
-spec:
-  assets:
-    - name: "ubuntu-gpu-k3s"
-      type: "virtual_disk"
-      format: "raw"
-      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04-gpu-k3s.img"
-  
-  resources:
-    # K3s Server Node
-    - type: "virdomain"
-      name: "k3s-gpu-server"
-      spec:
-        description: "K3s server node for GPU cluster"
-        cpu: 4
-        memory: "8589934592"  # 8 GB
-        machine_type: "uefi"
-        
-        storage_devices:
-          - name: "server-disk"
-            type: "virtio_disk"
-            source: "ubuntu-gpu-k3s"
-            boot: 1
-            capacity: 85899345920  # 80 GB
-        
-        network_devices:
-          - name: "gpu-cluster-net"
-            type: "virtio"
-        
-        tags:
-          - "kubernetes"
-          - "k3s"
-          - "server"
-          - "gpu-cluster"
-        
-        state: "running"
-        
-        cloud_init_data:
-          user_data: |
-            #cloud-config
-            package_update: true
-            packages:
-              - curl
-              - wget
-              - htop
-              - jq
-            
-            runcmd:
-              # Install K3s server
-              - curl -sfL https://get.k3s.io | sh -s - server --token=gputoken123
-              
-              # Configure kubectl
-              - mkdir -p /root/.kube
-              - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
-              - chmod 600 /root/.kube/config
-              
-              # Install Helm
-              - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-              
-              # Wait for K3s to be ready
-              - sleep 30
-              - kubectl wait --for=condition=Ready nodes --all --timeout=300s
-              
-              # Install NVIDIA GPU Operator
-              - helm repo add nvidia https://nvidia.github.io/gpu-operator
-              - helm repo update
-              - helm install gpu-operator nvidia/gpu-operator -n gpu-operator --create-namespace
-          
-          meta_data: |
-            instance-id: k3s-gpu-server
-            local-hostname: k3s-gpu-server
-    
-    # GPU Worker Node
-    - type: "virdomain"
-      name: "k3s-gpu-worker"
-      spec:
-        description: "K3s GPU worker node"
-        cpu: 8
-        memory: "17179869184"  # 16 GB
-        machine_type: "bios"  # GPU VMs often use BIOS
-        
-        storage_devices:
-          - name: "worker-disk"
-            type: "virtio_disk"
-            source: "ubuntu-gpu-k3s"
-            boot: 1
-            capacity: 107374182400  # 100 GB
-        
-        network_devices:
-          - name: "gpu-cluster-net"
-            type: "virtio"
-        
-        tags:
-          - "kubernetes"
-          - "k3s"
-          - "worker"
-          - "gpu"
-          - "ml"
-        
-        state: "running"
-        
-        cloud_init_data:
-          user_data: |
-            #cloud-config
-            package_update: true
-            packages:
-              - curl
-              - wget
-              - htop
-              - nvidia-driver-525
-              - nvidia-container-toolkit
-            
-            runcmd:
-              # Install Docker
-              - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-              - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-              - apt-get update
-              - apt-get install -y docker-ce docker-ce-cli containerd.io
-              
-              # Configure Docker for GPU
-              - nvidia-ctk runtime configure --runtime=docker
-              - systemctl restart docker
-              
-              # Join K3s cluster
-              - curl -sfL https://get.k3s.io | K3S_URL=https://192.168.1.10:6443 K3S_TOKEN=gputoken123 sh -
-              
-              # Reboot to ensure GPU drivers are loaded
-              - reboot
-          
-          meta_data: |
-            instance-id: k3s-gpu-worker
-            local-hostname: k3s-gpu-worker
-```
-
-## Kubernetes with Persistent Storage
-
-This example includes persistent storage configuration for stateful applications.
-
-### K3s with Longhorn Storage
-
-```yaml title="k3s-longhorn-storage.yaml"
-type: Application
-version: "1.0.0"
-metadata:
-  name: "k3s-longhorn-storage"
-  labels:
-    - "kubernetes:k3s"
-    - "storage:longhorn"
-    - "stateful:enabled"
-spec:
-  assets:
-    - name: "ubuntu-k3s-storage"
-      type: "virtual_disk"
-      format: "raw"
-      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04-k3s.img"
-  
-  resources:
-    # K3s Server with Longhorn
-    - type: "virdomain"
-      name: "k3s-longhorn-server"
-      spec:
-        description: "K3s server with Longhorn storage"
-        cpu: 4
-        memory: "8589934592"  # 8 GB
-        machine_type: "uefi"
-        
-        storage_devices:
-          - name: "system-disk"
-            type: "virtio_disk"
-            source: "ubuntu-k3s-storage"
-            boot: 1
-            capacity: 85899345920  # 80 GB
-          - name: "longhorn-disk"
-            type: "virtio_disk"
-            capacity: 214748364800  # 200 GB for Longhorn
-        
-        network_devices:
-          - name: "storage-net"
-            type: "virtio"
-        
-        tags:
-          - "kubernetes"
-          - "k3s"
-          - "server"
-          - "longhorn"
-        
-        state: "running"
-        
-        cloud_init_data:
-          user_data: |
-            #cloud-config
-            package_update: true
-            packages:
-              - curl
-              - wget
-              - htop
-              - jq
-              - open-iscsi
-            
-            runcmd:
-              # Format Longhorn disk
-              - mkfs.ext4 /dev/vdb
-              - mkdir -p /var/lib/longhorn
-              - mount /dev/vdb /var/lib/longhorn
-              - echo "/dev/vdb /var/lib/longhorn ext4 defaults 0 0" >> /etc/fstab
-              
-              # Install K3s
-              - curl -sfL https://get.k3s.io | sh -s - server --token=longhorntoken123
-              
-              # Configure kubectl
-              - mkdir -p /root/.kube
-              - cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
-              - chmod 600 /root/.kube/config
-              
-              # Install Helm
-              - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-              
-              # Wait for K3s to be ready
-              - sleep 30
-              - kubectl wait --for=condition=Ready nodes --all --timeout=300s
-              
-              # Install Longhorn
-              - helm repo add longhorn https://charts.longhorn.io
-              - helm repo update
-              - helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace
-              
-              # Create storage class
-              - kubectl apply -f - <<EOF
-                apiVersion: storage.k8s.io/v1
-                kind: StorageClass
-                metadata:
-                  name: longhorn-fast
-                provisioner: driver.longhorn.io
-                allowVolumeExpansion: true
-                parameters:
-                  numberOfReplicas: "1"
-                  staleReplicaTimeout: "30"
-                  fromBackup: ""
-                EOF
-          
-          meta_data: |
-            instance-id: k3s-longhorn-server
-            local-hostname: k3s-longhorn-server
-```
-
-## Common Kubernetes Patterns
-
-### Monitoring Stack
-
-```yaml
-# Prometheus and Grafana installation
-runcmd:
-  - helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-  - helm repo update
-  - helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
-```
-
-### Ingress Controller
-
-```yaml
-# Traefik ingress (default in K3s)
-runcmd:
-  - kubectl apply -f - <<EOF
-    apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    metadata:
-      name: example-ingress
-    spec:
-      rules:
-      - host: example.local
-        http:
-          paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: example-service
-                port:
-                  number: 80
-    EOF
-```
-
-### Cert-Manager
-
-```yaml
-# SSL certificate management
-runcmd:
-  - helm repo add jetstack https://charts.jetstack.io
-  - helm repo update
-  - helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --set installCRDs=true
-```
-
-### ArgoCD for GitOps
-
-```yaml
-# GitOps deployment
-runcmd:
-  - kubectl create namespace argocd
-  - kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-  - kubectl patch svc argocd-server -n argocd -p '{"spec":{"type":"LoadBalancer"}}'
+  # Custom cluster configuration
+  - curl -sfL https://get.k3s.io | sh -s - --cluster-cidr=10.42.0.0/16 --service-cidr=10.43.0.0/16
 ```
 
 ## Best Practices
 
-### 1. Resource Allocation
+### 1. Resource Planning
 
-```yaml
-# Minimum K3s requirements
-cpu: 2                    # Master nodes
-memory: "4294967296"      # 4GB for master
-capacity: 42949672960     # 40GB storage
+- **Memory**: 4 GB minimum for K3s + monitoring
+- **Storage**: 10 GB minimum, 50 GB recommended
+- **CPU**: 2 cores minimum for single-node
 
-# Production recommendations
-cpu: 4                    # Master nodes
-memory: "8589934592"      # 8GB for master
-capacity: 85899345920     # 80GB storage
-```
+### 2. Monitoring Configuration
 
-### 2. Security Configuration
+- **NodePort services**: Enable external access to dashboards
+- **Resource limits**: Set appropriate limits for monitoring components
+- **Persistent storage**: Consider persistent volumes for production
 
-```yaml
-# Secure K3s installation
-runcmd:
-  - curl -sfL https://get.k3s.io | sh -s - server --token=securetokenhere --tls-san=your-domain.com
-  - chmod 600 /etc/rancher/k3s/k3s.yaml
-```
+### 3. Security Considerations
 
-### 3. Network Configuration
+- **Change default passwords**: Update Grafana admin password
+- **SSH key management**: Use proper SSH keys in production
+- **Network policies**: Implement Kubernetes network policies
 
-```yaml
-# Custom CNI configuration
-runcmd:
-  - curl -sfL https://get.k3s.io | sh -s - server --flannel-backend=none
-  - kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-```
+### 4. Operational Excellence
 
-### 4. High Availability
-
-```yaml
-# HA K3s cluster
-runcmd:
-  - curl -sfL https://get.k3s.io | sh -s - server --cluster-init --token=hatoken123
-  # Additional servers join with: --server https://first-server:6443
-```
+- **Backup kubeconfig**: Save cluster access configuration
+- **Monitor resource usage**: Use the included monitoring stack
+- **Plan for scaling**: Consider multi-node clusters for production
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Node not joining**: Check token and server URL
-2. **Pods not starting**: Check image pull and resource limits
-3. **Storage issues**: Verify persistent volume claims
-4. **Network connectivity**: Check CNI configuration
+1. **K3s installation fails**: Check network connectivity and DNS
+2. **Pods won't start**: Check resource allocation and node capacity
+3. **Monitoring not accessible**: Verify NodePort service configuration
+4. **Storage issues**: Ensure adequate disk space
 
 ### Debug Commands
 
 ```bash
-# Check cluster status
-kubectl get nodes -o wide
-kubectl get pods --all-namespaces
+# Check K3s status
+sudo systemctl status k3s
 
-# Check K3s logs
+# View K3s logs
 sudo journalctl -u k3s
-sudo journalctl -u k3s-agent
 
-# Check system resources
+# Check cluster resources
 kubectl top nodes
 kubectl top pods --all-namespaces
+
+# Describe problematic pods
+kubectl describe pod -n monitoring prometheus-xxx
 ```
 
 ## Related Examples
 
-- **[GPU Applications](gpu.md)** - GPU-enabled Kubernetes
+- **[GPU Applications](gpu.md)** - GPU-enabled container workloads
 - **[Multi-VM Applications](multi-vm.md)** - Multi-node architectures
 - **[Linux Templates](linux.md)** - Linux base configurations
 
 ## Next Steps
 
 1. **Deploy** applications to your cluster
-2. **Configure** monitoring and alerting
-3. **Implement** GitOps workflows
-4. **Scale** cluster based on workload needs
+2. **Configure** persistent storage for production workloads
+3. **Add** additional monitoring and alerting
+4. **Scale** to multi-node clusters as needed
+5. **Implement** GitOps workflows with ArgoCD or Flux

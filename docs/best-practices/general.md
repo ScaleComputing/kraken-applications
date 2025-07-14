@@ -276,6 +276,3 @@ memory: "{{ prod_memory | default('8589934592') }}"
 ## Related Documentation
 
 - [Schema Reference](../spec/schema.md)
-- [Performance Best Practices](performance.md)
-- [Security Best Practices](security.md)
-- [Troubleshooting Guide](troubleshooting.md)

@@ -36,11 +36,11 @@ jobs:
     
     - name: Install dependencies
       run: |
-        uv sync --no-dev
+        make install-dev
     
-    - name: Build documentation
+    - name: Run quality checks
       run: |
-        uv run mkdocs build --verbose --clean
+        make check
     
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2
