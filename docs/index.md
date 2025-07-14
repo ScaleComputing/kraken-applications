@@ -18,19 +18,24 @@ Kraken is an infrastructure automation platform that simplifies the deployment a
 ## How It Works
 
 ```mermaid
-graph TD
-    A[Create Manifest] --> B[Submit to Kraken]
-    B --> C[Validation & Processing]
-    C --> D[Resource Provisioning]
-    D --> E[VM Deployment]
-    E --> F[Application Running]
-    
-    B --> G[Fleet Manager UI]
-    B --> H[Kraken Core API]
-    G --> I[Google Pub/Sub]
-    H --> I
-    I --> J[Pulumi Engine]
-    J --> K[HyperCore Clusters]
+sequenceDiagram
+    participant User
+    participant FleetManager as Fleet Manager UI
+    participant PubSub as Google Pub/Sub
+    participant KrakenAPI as Kraken Core API
+    participant Pulumi as Pulumi Engine
+    participant HyperCore as HyperCore Cluster
+
+    User->>FleetManager: Submit Manifest
+    FleetManager->>PubSub: Publish Event
+    PubSub->>KrakenAPI: Process Event
+    KrakenAPI->>KrakenAPI: Validate Manifest
+    KrakenAPI->>Pulumi: Execute Deployment
+    Pulumi->>HyperCore: Provision Resources
+    HyperCore->>Pulumi: Confirm Creation
+    Pulumi->>KrakenAPI: Report Status
+    KrakenAPI->>FleetManager: Update Status
+    FleetManager->>User: Show Results
 ```
 
 ## Quick Start
