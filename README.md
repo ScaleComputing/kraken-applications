@@ -224,18 +224,68 @@ When adding new examples:
 
 To contribute to the documentation site, you'll need:
 - [uv](https://docs.astral.sh/uv/) for Python package management
-- Basic familiarity with MkDocs
+- Basic familiarity with MkDocs and Markdown
+
+#### Quick Start
 
 ```bash
-# Install dependencies and start development server
+# Quick development setup (installs dependencies and starts dev server)
 make dev
 
-# Run quality checks
+# The development server will be available at http://localhost:8000
+```
+
+#### Common Commands
+
+```bash
+# Get help with all available commands
+make help
+
+# Install dependencies only
+make sync
+
+# Start development server with live reload
+make serve
+
+# Run quality checks (linting + strict build)
 make check
 
-# Build documentation
+# Build documentation site
 make build
+
+# Clean build artifacts
+make clean
 ```
+
+#### Content Management
+
+```bash
+# Create a new documentation page
+make new-page PAGE=path/to/page.md
+
+# List all documentation pages
+make list-pages
+
+# Show documentation status
+make status
+```
+
+#### Quality Assurance
+
+All contributions must pass quality checks:
+
+```bash
+# Run linting on YAML files
+make lint
+
+# Build with strict mode (warnings become errors)
+make build-strict
+
+# Run comprehensive quality checks
+make check
+```
+
+The GitHub Actions workflow automatically runs `make check` on all pull requests.
 
 ## Related Documentation
 
