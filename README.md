@@ -209,7 +209,7 @@ Common issues and solutions:
 
 For comprehensive guides, API reference, and interactive examples, visit our documentation site:
 
-**[https://jackhall.github.io/kraken-applications/](https://jackhall.github.io/kraken-applications/)**
+**[https://scalecomputing.github.io/kraken-applications/](https://scalecomputing.github.io/kraken-applications/)**
 
 ## Contributing
 

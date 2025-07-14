@@ -23,7 +23,7 @@ dev = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/jackhall/kraken-applications"
-"Documentation" = "https://jackhall.github.io/kraken-applications/"
-"Repository" = "https://github.com/jackhall/kraken-applications"
-"Bug Tracker" = "https://github.com/jackhall/kraken-applications/issues"
+"Homepage" = "https://github.com/scalecomputing/kraken-applications"
+"Documentation" = "https://scalecomputing.github.io/kraken-applications/"
+"Repository" = "https://github.com/scalecomputing/kraken-applications"
+"Bug Tracker" = "https://github.com/scalecomputing/kraken-applications/issues"

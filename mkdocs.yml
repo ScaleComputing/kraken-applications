@@ -3,10 +3,10 @@ site_name: Kraken Applications
 site_description: >-
   Interactive documentation for Kraken manifest specifications and examples
 site_author: Scale Computing
-site_url: https://jackhall.github.io/kraken-applications/
+site_url: https://scalecomputing.github.io/kraken-applications/
 
 repo_name: kraken-applications
-repo_url: https://github.com/jackhall/kraken-applications
+repo_url: https://github.com/scalecomputing/kraken-applications
 edit_uri: edit/main/docs/
 
 theme:
@@ -95,7 +95,7 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.magiclink:
       repo_url_shorthand: true
-      user: jackhall
+      user: scalecomputing
       repo: kraken-applications
   - pymdownx.mark
   - pymdownx.smartsymbols
@@ -142,7 +142,7 @@ extra:
     provider: mike
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/jackhall/kraken-applications
+      link: https://github.com/scalecomputing/kraken-applications
     - icon: fontawesome/solid/globe
       link: https://www.scalecomputing.com
     - icon: fontawesome/brands/docker
@@ -169,7 +169,7 @@ extra:
           data: 0
           note: >-
             Thanks for your feedback! Help us improve this page by
-            <a href="https://github.com/jackhall/kraken-applications/issues/new"
+            <a href="https://github.com/scalecomputing/kraken-applications/issues/new"
             target="_blank" rel="noopener">telling us what you found
             unhelpful</a>.
 

@@ -162,6 +162,6 @@ If you need assistance:
 
 - Browse [Examples](../examples/basic.md) for similar use cases
 - Review the [Specification](../spec/overview.md) for technical details
-- Open an issue on [GitHub](https://github.com/jackhall/kraken-applications/issues)
+- Open an issue on [GitHub](https://github.com/scalecomputing/kraken-applications/issues)
 
 Ready to dive in? Let's start with the [Quick Start Guide](quickstart.md)!

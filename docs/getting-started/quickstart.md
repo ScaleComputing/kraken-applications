@@ -237,7 +237,7 @@ If you encounter issues:
 
 1. **Check the logs** in Fleet Manager UI
 2. **Browse** [Examples](../examples/basic.md) for similar configurations
-3. **Open an issue** on [GitHub](https://github.com/jackhall/kraken-applications/issues)
+3. **Open an issue** on [GitHub](https://github.com/scalecomputing/kraken-applications/issues)
 
 ## What's Next?
 

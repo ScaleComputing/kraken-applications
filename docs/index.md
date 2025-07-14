@@ -117,7 +117,7 @@ This documentation is organized into several sections:
 
 ## Community and Support
 
-- **GitHub**: [kraken-applications](https://github.com/jackhall/kraken-applications)
+- **GitHub**: [kraken-applications](https://github.com/scalecomputing/kraken-applications)
 - **Issues**: Report bugs and request features
 - **Discussions**: Join community discussions
 - **Contributing**: Help improve the documentation
