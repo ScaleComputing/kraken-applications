@@ -9,7 +9,7 @@ The most basic Kraken manifest creates a single virtual machine. This example is
 ### Simple VirDomain Manifest
 
 ```yaml title="simple-virdomain/manifest.yaml"
-version: 1
+version: "1"
 type: Application
 metadata:
   name: simple-virdomain
@@ -21,12 +21,12 @@ spec:
       url: https://storage.googleapis.com/demo-bucket-lfm/netboot.xyz.img
   
   resources:
-    - name:  # Empty name will be auto-generated
+    - name: simple-virdomain # Name cannot contain spaces
       type: virdomain
       spec:
         description: A simple VM for testing
         cpu: 2
-        memory: 100000000  # ~95 MB
+        memory: "100000000"  # ~95 MB
         machine_type: uefi
         
         storage_devices:
@@ -86,7 +86,7 @@ spec:
     - name: test-disk
       type: virtual_disk
       format: iso
-      url: http://vm-stor2.lab.local/Public/large-file-manager/alpine-virt-3.21.2-x86_64.iso
+      url: https://cloud-images.ubuntu.com/noble/20250704/noble-server-cloudimg-amd64.img
 ```
 
 ### Use Case
