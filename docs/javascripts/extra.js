@@ -168,7 +168,7 @@ function enhanceSearch() {
 // Initialize search enhancements
 document.addEventListener('DOMContentLoaded', enhanceSearch);
 
-// Add smooth scrolling for anchor links
+/* // Add smooth scrolling for anchor links
 document.addEventListener('click', function(e) {
     if (e.target.tagName === 'A' && e.target.getAttribute('href').startsWith('#')) {
         e.preventDefault();
@@ -178,7 +178,7 @@ document.addEventListener('click', function(e) {
         }
     }
 });
-
+*/
 // Add keyboard shortcuts
 document.addEventListener('keydown', function(e) {
     // Ctrl/Cmd + K to focus search
