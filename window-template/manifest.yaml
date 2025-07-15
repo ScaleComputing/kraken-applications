@@ -31,4 +31,4 @@ spec:
     - name: window_disk
       type: virtual_disk
       format: raw
-      url: http://vm-stor2.lab.local/Public/large-file-manager/win22_server.img
+      url: https://storage.googleapis.com/demo-bucket/windows-server-2022.img
