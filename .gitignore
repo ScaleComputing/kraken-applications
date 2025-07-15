@@ -85,3 +85,7 @@ dmypy.json
 
 # Pre-commit
 .pre-commit-config.yaml
+
+CLAUDE.md
+GEMINI.md
+.env

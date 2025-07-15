@@ -1,0 +1,256 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://kraken.scalecomputing.com/schemas/application/v1.0.0.json",
+  "title": "Kraken Application Manifest",
+  "description": "Schema for Kraken Application manifests version 1.0.0",
+  "type": "object",
+  "required": ["type", "version", "metadata", "spec"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "Application",
+      "description": "Resource type identifier"
+    },
+    "version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version"
+    },
+    "metadata": {
+      "$ref": "#/definitions/metadata"
+    },
+    "spec": {
+      "$ref": "#/definitions/spec"
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "metadata": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+          "maxLength": 63,
+          "description": "Application name (DNS-1123 compliant)"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]([-a-zA-Z0-9_.]*[a-zA-Z0-9])?$",
+            "maxLength": 63
+          },
+          "description": "Classification and organization labels"
+        }
+      },
+      "additionalProperties": false
+    },
+    "spec": {
+      "type": "object",
+      "required": ["resources"],
+      "properties": {
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/asset"
+          },
+          "description": "External assets (disk images, ISOs, etc.)"
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/resource"
+          },
+          "minItems": 1,
+          "description": "Infrastructure resources"
+        }
+      },
+      "additionalProperties": false
+    },
+    "asset": {
+      "type": "object",
+      "required": ["name", "type", "format", "url"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+          "maxLength": 63,
+          "description": "Asset identifier"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["virtual_disk"],
+          "description": "Asset type"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["raw", "qcow2", "iso"],
+          "description": "Asset format"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "description": "Asset download URL (HTTPS required)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resource": {
+      "type": "object",
+      "required": ["type", "name", "spec"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["virdomain"],
+          "description": "Resource type"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+          "maxLength": 63,
+          "description": "Resource identifier"
+        },
+        "spec": {
+          "$ref": "#/definitions/virdomain_spec"
+        }
+      },
+      "additionalProperties": false
+    },
+    "virdomain_spec": {
+      "type": "object",
+      "required": ["cpu", "memory", "machine_type", "state"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "maxLength": 255,
+          "description": "Human-readable description"
+        },
+        "cpu": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 128,
+          "description": "Number of virtual CPU cores"
+        },
+        "memory": {
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "description": "Memory allocation in bytes (as string)"
+        },
+        "machine_type": {
+          "type": "string",
+          "enum": ["uefi", "bios", "tpm"],
+          "description": "Virtual machine firmware type"
+        },
+        "state": {
+          "type": "string",
+          "enum": ["running", "shutoff"],
+          "description": "Desired VM power state"
+        },
+        "storage_devices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/storage_device"
+          },
+          "description": "Storage devices"
+        },
+        "network_devices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/network_device"
+          },
+          "description": "Network interfaces"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]([-a-zA-Z0-9_.]*[a-zA-Z0-9])?$",
+            "maxLength": 63
+          },
+          "description": "Classification tags"
+        },
+        "cloud_init_data": {
+          "$ref": "#/definitions/cloud_init_data"
+        }
+      },
+      "additionalProperties": false
+    },
+    "storage_device": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+          "maxLength": 63,
+          "description": "Storage device identifier"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["virtio_disk", "ide_cdrom"],
+          "description": "Storage device type"
+        },
+        "source": {
+          "type": "string",
+          "description": "Reference to asset name"
+        },
+        "capacity": {
+          "type": "integer",
+          "minimum": 1073741824,
+          "maximum": 1099511627776,
+          "description": "Storage capacity in bytes (1GB to 1TB)"
+        },
+        "boot": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 255,
+          "description": "Boot priority (1=primary)"
+        }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": ["source"]
+        },
+        {
+          "required": ["capacity"]
+        }
+      ]
+    },
+    "network_device": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+          "maxLength": 63,
+          "description": "Network interface identifier"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["virtio"],
+          "description": "Network device type"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cloud_init_data": {
+      "type": "object",
+      "properties": {
+        "user_data": {
+          "type": "string",
+          "description": "Cloud-init user data (YAML)"
+        },
+        "meta_data": {
+          "type": "string",
+          "description": "Cloud-init metadata (YAML)"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
