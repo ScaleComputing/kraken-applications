@@ -47,68 +47,6 @@ Get started with Kraken Applications in just a few steps:
 3. **[Deploy Your First App](getting-started/quickstart.md)** - Follow our quick start guide
 4. **[Learn Best Practices](best-practices/general.md)** - Optimize your deployments
 
-## Featured Examples
-
-=== "Simple Virtual Machine"
-
-    ```yaml
-    type: Application
-    version: "1.0.0"
-    metadata:
-      name: "my-vm"
-    spec:
-      resources:
-        - type: virdomain
-          name: "my-vm"
-          spec:
-            cpu: 2
-            memory: "4294967296"
-            machine_type: "uefi"
-            state: "running"
-    ```
-
-=== "Kubernetes Cluster"
-
-    ```yaml
-    type: Application
-    version: "1.0.0"
-    metadata:
-      name: "k3s-cluster"
-    spec:
-      resources:
-        - type: virdomain
-          name: "k3s-node"
-          spec:
-            cpu: 4
-            memory: "8589934592"
-            cloud_init_data:
-              user_data: |
-                #cloud-config
-                runcmd:
-                  - curl -sfL https://get.k3s.io | sh -
-    ```
-
-=== "GPU Application"
-
-    ```yaml
-    type: Application
-    version: "1.0.0"
-    metadata:
-      name: "gpu-workload"
-    spec:
-      resources:
-        - type: virdomain
-          name: "gpu-vm"
-          spec:
-            cpu: 8
-            memory: "17179869184"
-            cloud_init_data:
-              user_data: |
-                #cloud-config
-                runcmd:
-                  - apt-get update
-                  - apt-get install -y nvidia-driver-525
-    ```
 
 ## Documentation Structure
 
@@ -123,9 +61,8 @@ This documentation is organized into several sections:
 ## Community and Support
 
 - **GitHub**: [kraken-applications](https://github.com/scalecomputing/kraken-applications)
-- **Issues**: Report bugs and request features
-- **Discussions**: Join community discussions
-- **Contributing**: Help improve the documentation
+- **Issues**: Report bugs and request features via slack at #kraken-users
+- **Contributing**: [Help improve the documentation] (https://github.com/ScaleComputing/kraken-applications/issues)
 
 ---
 
