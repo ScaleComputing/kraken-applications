@@ -1,11 +1,11 @@
 /* Custom styles for Kraken Applications documentation */
 /* Scale Computing brand colors */
 :root {
-    --sc-primary-accent: #0097a7;
+    --sc-primary-accent: #555770;
     --sc-secondary-accent: #00acc1;
     --sc-primary-blue: #0066cc;
     --sc-secondary-blue: #4a90e2;
-    --sc-dark-gray: #2c3e50;
+    --sc-dark-gray: #28293d;
     --sc-medium-gray: #7f8c8d;
     --sc-light-gray: #ecf0f1;
     --sc-success-green: #27ae60;
