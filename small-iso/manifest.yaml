@@ -7,4 +7,4 @@ spec:
     - name: test-disk
       type: virtual_disk
       format: iso
-      url: http://vm-stor2.lab.local/Public/large-file-manager/alpine-virt-3.21.2-x86_64.iso
+      url: https://cloud-images.ubuntu.com/noble/20250704/noble-server-cloudimg-amd64.img
