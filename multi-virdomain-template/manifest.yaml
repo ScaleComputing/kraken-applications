@@ -38,23 +38,23 @@ spec:
           - name: disk2
             type: virtio_disk
             capacity: 50000000000 # 50G
-            source: "fedora_disk"
+            source: "ubuntu_disk"
             boot: 1
         network_devices:
           - name: eth0
             type: virtio
         tags:
           - template
-          - fedora
+          - ubuntu
           - linux
         state: shutoff
         machine_type: uefi
   assets:
-    - name: fedora_disk
+    - name: ubuntu_disk
       type: virtual_disk
       format: raw
-      url: http://vm-stor2.lab.local/Public/large-file-manager/linux_template.img
+      url: https://cloud-images.ubuntu.com/noble/20250704/noble-server-cloudimg-amd64.img
     - name: window_disk
       type: virtual_disk
       format: raw
-      url: http://vm-stor2.lab.local/Public/large-file-manager/win22_server.img
+      url: https://storage.googleapis.com/demo-bucket/windows-server-2022.img
