@@ -4,9 +4,7 @@ This page provides the complete JSON Schema specification for Kraken Application
 
 ## JSON Schema
 
-The complete JSON Schema for Kraken Application manifests:
-
-[JSON Schema](https://scalecomputing.github.io/kraken-applications/schema.json)
+The complete JSON Schema for Kraken Application manifests is available at [https://scalecomputing.github.io/kraken-applications/schema.json](https://scalecomputing.github.io/kraken-applications/schema.json)
 
 ## Validation Examples
 
