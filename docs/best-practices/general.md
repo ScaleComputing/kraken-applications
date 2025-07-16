@@ -187,10 +187,7 @@ git commit -m "Fix asset URL in development environment"
 
 ### Validation
 
-```bash
-# Validate before deployment
-jsonschema -i manifest.yaml schema.json
-```
+Leverage the [Schema Reference](https://scalecomputing.github.io/kraken-applications/spec/schema/) page to validate your Kraken Manifests against the json shcema early and often.
 
 ### Staging First
 
