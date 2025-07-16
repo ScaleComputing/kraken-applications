@@ -112,7 +112,7 @@ spec:                         # Main specification
 For the best development experience, we recommend:
 
 1. **YAML Editor**: Use an editor with YAML syntax highlighting
-2. **Validation**: Set up schema validation for immediate feedback
+2. **Validation**: [Set up schema validation for immediate feedback via command line or IDE](https://scalecomputing.github.io/kraken-applications/spec/schema)
 3. **Version Control**: Track your manifests in Git
 4. **Documentation**: Keep README files with your manifests
 
