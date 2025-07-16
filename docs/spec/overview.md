@@ -163,6 +163,7 @@ Manifests are validated against JSON Schema during processing:
   }
 }
 ```
+For the full schema and details on it's use, check out the [schema reference](https://scalecomputing.github.io/kraken-applications/spec/schema/) page.
 
 ## Version Compatibility
 
