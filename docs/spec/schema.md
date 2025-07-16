@@ -191,8 +191,8 @@ console.log(result);
 
 ### VS Code
 
-Open `.vscode/settings.json` in vs code. The location and steps to access this file vary by Operating System, find your steps here: https://code.visualstudio.com/docs/configure/settings#_settings-json-file
-Copy and paste the following into your settings.JSON field (or add if you already have existing yaml.schemas)
+1. Open `.vscode/settings.json` in vs code. The location and steps to access this file vary by Operating System, find your steps here: https://code.visualstudio.com/docs/configure/settings#_settings-json-file
+2. Copy and paste the following into your settings.JSON file (or add if you already have existing yaml.schemas)
 
 ```json
 {
@@ -201,9 +201,10 @@ Copy and paste the following into your settings.JSON field (or add if you alread
     }
 }
 ```
-Restart VS Code to ensure settings are applied.
+3. Restart VS Code to ensure settings are applied.
 
-The second part (e.g., "/*.yaml") is a glob pattern that tells the YAML extension which YAML files in your workspace should be validated against that schema.
+Note:
+The first part is just pointing to the location of the JSON schema. The second part (e.g., "/*.yaml") is a glob pattern that tells the YAML extension which YAML files in your workspace should be validated against that schema.
 
 "/*.yaml": All YAML files in the workspace root.
 
