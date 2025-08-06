@@ -18,6 +18,11 @@
   background: var(--sc-primary-accent);
 }
 
+/* Hide the left sidebar when a section only has one page */
+.md-sidebar--primary .md-nav__list .md-nav__list[data-md-level="2"] > .md-nav__item:only-child {
+  display: none;
+}
+
 /* Enhanced code blocks */
 .highlight {
     margin: 1.5em 0;
