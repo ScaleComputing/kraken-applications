@@ -13,6 +13,11 @@
     --sc-error-red: #e74c3c;
 }
 
+/* Change the color of the scrollbar on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sc-primary-accent);
+}
+
 /* Enhanced code blocks */
 .highlight {
     margin: 1.5em 0;
