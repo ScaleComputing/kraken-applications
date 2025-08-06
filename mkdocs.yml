@@ -12,13 +12,8 @@ edit_uri: edit/main/docs/
 theme:
   name: material
   palette:
-    # Palette toggle for automatic mode
-    - media: "(prefers-color-scheme)"
-      toggle:
-        icon: material/brightness-auto
-        name: Switch to light mode
 
-    # Palette toggle for light mode
+    # Palette toggle for light mode (default)
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: blue grey
@@ -34,7 +29,7 @@ theme:
       accent: teal
       toggle:
         icon: material/brightness-4
-        name: Switch to system preference
+        name: Switch to light mode
 
   features:
     - navigation.tabs
@@ -42,6 +37,7 @@ theme:
     - navigation.expand
     - navigation.path
     - navigation.top
+    - navigation.footer
     - search.highlight
     - search.share
     - search.suggest
