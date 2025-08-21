@@ -55,37 +55,19 @@ spec:
 
 ## Step 2: Deploy Your Manifest
 
-### Option A: Fleet Manager UI
-
 1. **Log in** to your Fleet Manager UI
 2. **Navigate** to the Applications section
 3. **Click** "Create Application"
 4. **Paste** your manifest into the editor
 5. **Click** "Deploy"
 
-### Option B: API Deployment
-
-```bash
-curl -X POST https://your-kraken-api.com/v1/event \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d @my-first-vm.yaml
-```
-
 ## Step 3: Monitor Deployment
 
-### Via Fleet Manager UI
 
-1. **Check** the Applications dashboard
+1. **Check** the Deployments dashboard
 2. **Monitor** deployment progress
 3. **View** resource status and logs
 
-### Via API
-
-```bash
-curl -X GET https://your-kraken-api.com/v1/applications/my-first-vm \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
 
 ## Step 4: Verify Your VM
 
