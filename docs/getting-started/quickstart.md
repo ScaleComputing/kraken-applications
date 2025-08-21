@@ -77,7 +77,7 @@ Once deployed, verify your VM is running:
 2. **Verify resource allocation** matches your manifest
 3. **Test network connectivity** if needed
 
-## Step 5: Next Steps
+## Step 5: Next Steps (NOTE: Updating applications and redepoying is currently under development. Try these steps by creating a new application and deployment.)
 
 Now that you have a basic VM running, try these enhancements:
 
