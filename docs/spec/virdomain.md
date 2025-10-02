@@ -178,8 +178,9 @@ Network devices define the VM's network connectivity.
 
 ```yaml
 network_devices:
-  - name: "interface-name"
-    type: "virtio"
+  - name: interface-name
+    type: virtio
+    vlan: 164
 ```
 
 ### Network Device Properties
@@ -195,6 +196,12 @@ network_devices:
 - **Description**: Network device type
 - **Values**: `"virtio"` (high-performance, recommended)
 - **Required**: Yes
+
+#### vlan
+- **Type**: `integer`
+- **Description**: VLAN tag of the interface
+- **Values**: `"164"` (Valid values are 0-4094)
+- **Required**: No (will default to 0, which means ALL)
 
 ## Cloud-Init Integration
 
