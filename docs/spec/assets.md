@@ -22,12 +22,12 @@ spec:
 
 ### type
 - **Type**: `string`
-- **Values**: `"virtual_disk"`
-- **Description**: Asset type identifier
+- **Value**: `"virtual_disk"`
+- **Description**: Asset type identifier.
 
-### format
+### format (support for qcow2 and iso images is coming in a future HyperCore version)
 - **Type**: `string`
-- **Values**: `"raw"`, `"qcow2"`, `"iso"`
+- **Value**: `"raw"`
 - **Description**: Asset file format
 
 ### url
@@ -48,15 +48,6 @@ Disk images for VM storage:
   url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04.img"
 ```
 
-### ISO Images
-
-ISO files for installation or tools:
-
-```yaml
-- name: "install-iso"
-  type: "virtual_disk"
-  format: "iso"
-  url: "https://releases.ubuntu.com/22.04/ubuntu-22.04.3-live-server-amd64.iso"
 ```
 
 ## Usage in Resources
@@ -90,11 +81,7 @@ assets:
     type: "virtual_disk"
     format: "raw"
     url: "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img"
-  
-  - name: "centos-stream"
-    type: "virtual_disk"
-    format: "qcow2"
-    url: "https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-9-latest.x86_64.qcow2"
+
 ```
 
 ### Windows Images
@@ -105,14 +92,4 @@ assets:
     type: "virtual_disk"
     format: "raw"
     url: "https://storage.example.com/windows-server-2022.img"
-```
-
-### Installation Media
-
-```yaml
-assets:
-  - name: "vmware-tools"
-    type: "virtual_disk"
-    format: "iso"
-    url: "https://packages.vmware.com/tools/releases/latest/vmware-tools-linux.iso"
 ```
