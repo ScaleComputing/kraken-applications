@@ -77,9 +77,19 @@ Once deployed, verify your VM is running:
 2. **Verify resource allocation** matches your manifest
 3. **Test network connectivity** if needed
 
-## Step 5: Next Steps (NOTE: Updating applications and redepoying is currently under development. Try these steps by creating a new application and deployment.)
+## Step 5: Next Steps
 
-Now that you have a basic VM running, try these enhancements:
+Now that you have a basic VM running, try these updates. 
+
+To make updates to deployed VMs:
+1. Open the application record
+2. Edit the manifest
+3. Save
+4. Open or Create a deployment record that references the application
+5. Deploy and watch the updated manifest apply!
+
+Note that the update process will typically power down the VM, make changes, and restore the VM running state to the desired setting.
+Warning: Updating the name will _create a new_ VM. Updating the VM name is currently not supported.
 
 ### Add an External Disk Image
 
