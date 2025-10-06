@@ -116,7 +116,7 @@ storage_devices:
   - name: "device-name"
     type: "device-type"
     source: "asset-name"        # Optional: reference to asset
-    capacity: 50000000000       # Optional: size in bytes
+    capacity: 50000000000       # Optional: size in bytes or human readable units
     boot: 1                     # Optional: boot priority
 ```
 
@@ -164,7 +164,12 @@ IDE CD-ROM for ISO images:
 - **Type**: `integer`
 - **Description**: Storage capacity in bytes
 - **Required**: Only for disks without source
-- **Example**: `capacity: 53687091200` (50 GB)
+- **Minimum**: 1GB
+- **Maximum**: 16TB
+- **Examples**: (all equal 1 TB)
+  - `capacity: "1099511627776"`
+  - `capacity: "1000GB"`
+  - `capacity: "1TB"`
 
 #### boot
 - **Type**: `integer`
@@ -196,7 +201,7 @@ network_devices:
 #### type
 - **Type**: `string`
 - **Description**: Network device type
-- **Values**: `"virtio"` (high-performance, recommended)
+- **Values**: `"INTEL_E1000","RTL8139","virtio"` (virtio is recommended)
 - **Required**: Yes
 
 #### vlan
