@@ -84,8 +84,8 @@ Now that you have a basic VM running, try these updates.
 To make updates to deployed VMs:
 1. Open the application record
 2. Edit the manifest
-3. Save
-4. Open or Create a deployment record that references the application
+3. Save the application
+4. Reurn to the deployment record that references the application
 5. Deploy and watch the updated manifest apply!
 
 **Note**: the update process will typically power down the VM, make changes, and restore the VM running state to the desired setting.
