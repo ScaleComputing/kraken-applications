@@ -96,7 +96,7 @@ resources:
 
 ### tags
 - **Type**: `array`
-- **Description**: Classification tags for organization and automation
+- **Description**: Classification tags for organization and automation. The first tag will be used as a grouper in the HyperCore UI.
 - **Items**: String tags
 - **Example**: `tags: ["production", "web-server", "monitoring"]`
 
@@ -167,7 +167,7 @@ IDE CD-ROM for ISO images:
 - **Minimum**: 1GB
 - **Maximum**: 16TB
 - **Examples**: (all equal 1 TB)
-  - `capacity: "1099511627776"`
+  - `capacity: "1000000000000"`
   - `capacity: "1000GB"`
   - `capacity: "1TB"`
 
