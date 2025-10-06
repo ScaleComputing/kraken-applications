@@ -88,8 +88,9 @@ To make updates to deployed VMs:
 4. Open or Create a deployment record that references the application
 5. Deploy and watch the updated manifest apply!
 
-Note that the update process will typically power down the VM, make changes, and restore the VM running state to the desired setting.
-Warning: Updating the name will _create a new_ VM. Updating the VM name is currently not supported.
+**Note**: the update process will typically power down the VM, make changes, and restore the VM running state to the desired setting.
+
+**Warning**: Updating the name will _create a new_ VM. Updating the VM name is currently not supported.
 
 ### Add an External Disk Image
 
