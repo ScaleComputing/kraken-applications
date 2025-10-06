@@ -40,23 +40,25 @@ resources:
 - **Type**: `object`
 - **Description**: VirDomain specification object containing all VM configuration
 
-## Core Specification Fields
+
+## Required Specification Fields
 
 ### cpu
 - **Type**: `integer`
 - **Description**: Number of virtual CPU cores
-- **Minimum**: 1
-- **Maximum**: Limited by cluster capacity
+- **Minimum**: 0 (a 0 Core cannot boot, which may be desirable for templates)
+- **Maximum**: 128 or cluster capacity, whichever is less
 - **Example**: `cpu: 4`
 
 ### memory
 - **Type**: `string`
-- **Description**: RAM allocation in bytes
-- **Format**: String representation of bytes
-- **Examples**:
-  - `"1073741824"` (1 GB)
-  - `"4294967296"` (4 GB)
-  - `"8589934592"` (8 GB)
+- **Description**: RAM allocation in bytes or Integers with human readable units
+- **Minimum**: 100000000 (95 MiB)
+- **Maximum**: Largest Node's Free RAM capacity
+- **Examples**:(All equal 4 GiB)
+  - `memory: "4294967296"`
+  - `memory: "4000MiB"`
+  - `memory: "4GiB"`
 
 ### machine_type
 - **Type**: `string`
@@ -85,12 +87,12 @@ resources:
 ### storage_devices
 - **Type**: `array`
 - **Description**: List of storage devices attached to the VM
-- **Items**: Storage device objects
+- **Items**: Storage device objects [See storage_devices spec](https://scalecomputing.github.io/kraken-applications/spec/virdomain/#storage-devices)
 
 ### network_devices
 - **Type**: `array`
 - **Description**: List of network interfaces attached to the VM
-- **Items**: Network device objects
+- **Items**: Network device objects [See network_devices spec](https://scalecomputing.github.io/kraken-applications/spec/virdomain/#network-devices)
 
 ### tags
 - **Type**: `array`
@@ -100,7 +102,7 @@ resources:
 
 ### cloud_init_data
 - **Type**: `object`
-- **Description**: Cloud-init configuration for VM initialization
+- **Description**: Cloud-init configuration for VM initialization. [See Cloud-Init Specification](https://scalecomputing.github.io/kraken-applications/spec/cloud-init/)
 - **Properties**: `user_data`, `meta_data`
 
 ## Storage Devices
