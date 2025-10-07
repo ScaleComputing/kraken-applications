@@ -2,6 +2,8 @@
 
 This section demonstrates Windows-based virtual machine templates and configurations using Kraken manifests. These examples show how to create, configure, and deploy Windows VMs for enterprise and development environments.
 
+**NOTE** Windows licensing requires you to source your own Windows images. We recommend deploying pre-configured images whever possible so they are "ready to run" when booted without additional manual configuration post-deployment.
+
 ## Overview
 
 Windows templates in Kraken provide:
@@ -11,6 +13,7 @@ Windows templates in Kraken provide:
 - **Template VMs** for rapid deployment
 - **Cloud-init integration** for automated setup
 - **Active Directory** integration capabilities
+- **Scale Guest Tools** for better HyperCore visibility into guest.
 
 ## Windows Server Template
 
@@ -39,8 +42,9 @@ spec:
       name: "windows-server-template"
       spec:
         description: "Windows Server 2022 template for enterprise deployment"
+        os: windows
         cpu: 4
-        memory: "8589934592"  # 8 GB
+        memory: 8 GiB
         machine_type: "tpm"  # TPM required for Windows security
         
         storage_devices:
@@ -48,7 +52,7 @@ spec:
             type: "virtio_disk"
             source: "windows-server-2022"
             boot: 1
-            capacity: 107374182400  # 100 GB
+            capacity: 100 GB
         
         network_devices:
           - name: "ethernet"
@@ -81,7 +85,7 @@ Windows desktop environment for development and testing.
 type: Application
 version: "1.0.0"
 metadata:
-  name: "windows-desktop-{{ user_id }}"
+  name: "windows-desktop"
   labels:
     - "os:windows"
     - "purpose:development"
@@ -95,11 +99,12 @@ spec:
   
   resources:
     - type: "virdomain"
-      name: "windows-dev-{{ user_id }}"
+      name: "windows-dev-{{cluster_name}}"
       spec:
         description: "Windows 11 Pro development environment"
+        os: windows
         cpu: 4
-        memory: "8589934592"  # 8 GB
+        memory: 8 GiB
         machine_type: "tpm"
         
         storage_devices:
@@ -107,10 +112,10 @@ spec:
             type: "virtio_disk"
             source: "windows-11-pro"
             boot: 1
-            capacity: 128849018880  # 120 GB
+            capacity: 120 GB
           - name: "data-disk"
             type: "virtio_disk"
-            capacity: 214748364800  # 200 GB
+            capacity: 200 GB
         
         network_devices:
           - name: "ethernet"
@@ -157,8 +162,8 @@ spec:
               - powershell -Command "Set-ExecutionPolicy RemoteSigned -Force"
           
           meta_data: |
-            instance-id: windows-dev-{{ user_id }}
-            local-hostname: windows-dev-{{ user_id }}
+            instance-id: windows-dev
+            local-hostname: windows-dev
 ```
 
 ## Active Directory Domain Controller
@@ -188,8 +193,9 @@ spec:
       name: "ad-domain-controller"
       spec:
         description: "Windows Server 2022 Active Directory Domain Controller"
+        os: windows
         cpu: 4
-        memory: "8589934592"  # 8 GB
+        memory: 8GiB
         machine_type: "tpm"
         
         storage_devices:
@@ -197,10 +203,10 @@ spec:
             type: "virtio_disk"
             source: "windows-server-2022-dc"
             boot: 1
-            capacity: 107374182400  # 100 GB
+            capacity: 100GB
           - name: "ad-database"
             type: "virtio_disk"
-            capacity: 53687091200  # 50 GB for AD database
+            capacity: 50GB
         
         network_devices:
           - name: "domain-network"
@@ -265,11 +271,12 @@ spec:
   
   resources:
     - type: "virdomain"
-      name: "iis-web-{{ instance_id }}"
+      name: "iis-web-{{cluster_name}}"
       spec:
         description: "Windows Server 2022 with IIS web server"
+        os: windows
         cpu: 2
-        memory: "4294967296"  # 4 GB
+        memory: 4GiB
         machine_type: "tpm"
         
         storage_devices:
@@ -277,10 +284,10 @@ spec:
             type: "virtio_disk"
             source: "windows-server-2022"
             boot: 1
-            capacity: 85899345920  # 80 GB
+            capacity: 80GB
           - name: "web-content"
             type: "virtio_disk"
-            capacity: 42949672960  # 40 GB for web content
+            capacity: 40GB
         
         network_devices:
           - name: "web-network"
@@ -316,8 +323,8 @@ spec:
               - powershell -Command "Set-Content -Path 'C:\\inetpub\\wwwroot\\index.html' -Value '<html><body><h1>IIS Server Running</h1><p>Server: {{ instance_id }}</p></body></html>'"
           
           meta_data: |
-            instance-id: iis-web-{{ instance_id }}
-            local-hostname: iis-web-{{ instance_id }}
+            instance-id: iis-web
+            local-hostname: iis-web
 ```
 
 ## SQL Server Database
@@ -330,7 +337,7 @@ Windows Server with SQL Server for database workloads.
 type: Application
 version: "1.0.0"
 metadata:
-  name: "sql-server-{{ instance_id }}"
+  name: "sql-server"
   labels:
     - "os:windows"
     - "database:sql-server"
@@ -344,11 +351,11 @@ spec:
   
   resources:
     - type: "virdomain"
-      name: "sql-server-{{ instance_id }}"
+      name: "sql-server-{{cluster_name}}"
       spec:
         description: "Windows Server 2022 with SQL Server"
         cpu: 4
-        memory: "17179869184"  # 16 GB
+        memory: 16GiB
         machine_type: "tpm"
         
         storage_devices:
@@ -356,13 +363,13 @@ spec:
             type: "virtio_disk"
             source: "windows-server-sql"
             boot: 1
-            capacity: 107374182400  # 100 GB
+            capacity: 100GB
           - name: "data-disk"
             type: "virtio_disk"
-            capacity: 214748364800  # 200 GB for databases
+            capacity: 200GB
           - name: "log-disk"
             type: "virtio_disk"
-            capacity: 107374182400  # 100 GB for logs
+            capacity: 100GB
         
         network_devices:
           - name: "sql-network"
@@ -400,8 +407,8 @@ spec:
               - powershell -Command "New-NetFirewallRule -DisplayName 'SQL Server' -Direction Inbound -Protocol TCP -LocalPort 1433 -Action Allow"
           
           meta_data: |
-            instance-id: sql-server-{{ instance_id }}
-            local-hostname: sql-server-{{ instance_id }}
+            instance-id: sql-server
+            local-hostname: sql-server
 ```
 
 ## Common Windows Patterns
@@ -470,8 +477,8 @@ runcmd:
 ```yaml
 # Appropriate Windows sizing
 cpu: 4                    # Minimum for server workloads
-memory: "8589934592"      # 8GB minimum for Windows Server
-capacity: 107374182400    # 100GB minimum for Windows + apps
+memory: 8GiB     # 8GiB minimum for Windows Server
+capacity: 100GB    # 100GB minimum for Windows + apps
 ```
 
 ### 3. TPM Configuration
@@ -487,9 +494,15 @@ machine_type: "tpm"  # Required for Windows security features
 # Separate system and data storage
 storage_devices:
   - name: "system-disk"     # OS and applications
-    capacity: 107374182400  # 100GB
+    capacity: 100GB
   - name: "data-disk"       # Application data
-    capacity: 214748364800  # 200GB
+    capacity: 200GB
+```
+
+### 5. Scale Guest Tools
+```yaml
+# Setting os:windows ensure that the scale guest tools ISO is automatically attached to VM to ensure required drivers are available.
+os: windows
 ```
 
 ## Troubleshooting
