@@ -14,6 +14,7 @@ resources:
     name: "unique-vm-name"
     spec:
       description: "Human-readable description"
+      os: windows
       cpu: 2
       memory: "4294967296"
       machine_type: "uefi"
@@ -83,6 +84,14 @@ resources:
 - **Type**: `string`
 - **Description**: Human-readable description of the VM
 - **Example**: `description: "Production web server with load balancer"`
+
+### os
+- **Type**: `string`
+- **Description**: Operating System
+- **Values**:
+  - `windows"` - This ensures that the scale guest tools ISO is attached to the VM on creation
+  - `other` - Most linux distributions contain the necessary drivers, so no guest tools ISO is attached. 
+- **Example**: `os: windows`
 
 ### storage_devices
 - **Type**: `array`
