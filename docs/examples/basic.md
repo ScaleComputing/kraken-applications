@@ -86,7 +86,7 @@ spec:
     - name: test-disk
       type: virtual_disk
       format: iso
-      url: https://cloud-images.ubuntu.com/noble/20250704/noble-server-cloudimg-amd64.img
+      url: https://releases.ubuntu.com/noble/ubuntu-24.04.3-desktop-amd64.iso
 ```
 
 ### Use Case
