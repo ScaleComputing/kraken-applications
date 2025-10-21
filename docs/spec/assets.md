@@ -25,9 +25,9 @@ spec:
 - **Value**: `"virtual_disk"`
 - **Description**: Asset type identifier.
 
-### format (support for qcow2 and iso images is coming in a future HyperCore version)
+### format (support for .qcow2, .vmdk,.vhd, .vhdx, and non-raw .img are coming in a future HyperCore version)
 - **Type**: `string`
-- **Value**: `"raw"`
+- **Values**: `"raw", "iso"`
 - **Description**: Asset file format
 
 ### url
