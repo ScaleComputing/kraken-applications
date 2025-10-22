@@ -32,7 +32,7 @@ spec:
     - name: "fedora-base"
       type: "virtual_disk"
       format: "raw"
-      url: "https://storage.googleapis.com/demo-bucket/fedora-base.img"
+      url: "https://your-fedora-base-image-url.img"
   
   resources:
     - type: "virdomain"
@@ -40,7 +40,7 @@ spec:
       spec:
         description: "Fedora-based Linux template for cloning"
         cpu: 2
-        memory: "4294967296"  # 4 GB
+        memory: "4 GiB"
         machine_type: "uefi"
         
         storage_devices:
@@ -48,7 +48,7 @@ spec:
             type: "virtio_disk"
             source: "fedora-base"
             boot: 1
-            capacity: 53687091200  # 50 GB
+            capacity: "50 GB"
         
         network_devices:
           - name: "eth0"
@@ -80,10 +80,9 @@ Production-ready Ubuntu server configuration with cloud-init.
 type: Application
 version: "1.0.0"
 metadata:
-  name: "ubuntu-server-{{ instance_id }}"
+  name: "ubuntu-server"
   labels:
     - "os:ubuntu"
-    - "environment:{{ environment }}"
 spec:
   assets:
     - name: "ubuntu-server"
@@ -93,11 +92,11 @@ spec:
   
   resources:
     - type: "virdomain"
-      name: "ubuntu-server-{{ instance_id }}"
+      name: "ubuntu-server"
       spec:
         description: "Ubuntu 22.04 LTS server"
         cpu: 2
-        memory: "4294967296"  # 4 GB
+        memory: "4 GiB"
         machine_type: "uefi"
         
         storage_devices:
@@ -105,7 +104,7 @@ spec:
             type: "virtio_disk"
             source: "ubuntu-server"
             boot: 1
-            capacity: 42949672960  # 40 GB
+            capacity: "40 GB"
         
         network_devices:
           - name: "eth0"
@@ -157,21 +156,21 @@ spec:
               - systemctl start ssh
           
           meta_data: |
-            instance-id: ubuntu-server-{{ instance_id }}
-            local-hostname: ubuntu-server-{{ instance_id }}
+            instance-id: ubuntu-server
+            local-hostname: ubuntu-server
 ```
 
 ## CentOS Stream
 
 Enterprise Linux configuration with Red Hat ecosystem tools.
 
-### CentOS Stream Manifest
+### CentOS Stream Manifest (Note: QCOW2 support is coming in a later HyperCore release. For now, swap in an ISO or rw format centos image)
 
 ```yaml title="centos-stream.yaml"
 type: Application
 version: "1.0.0"
 metadata:
-  name: "centos-stream-{{ instance_id }}"
+  name: "centos-stream"
   labels:
     - "os:centos"
     - "type:enterprise"
@@ -184,11 +183,11 @@ spec:
   
   resources:
     - type: "virdomain"
-      name: "centos-stream-{{ instance_id }}"
+      name: "centos-stream"
       spec:
         description: "CentOS Stream 9 enterprise server"
         cpu: 4
-        memory: "8589934592"  # 8 GB
+        memory: "8 GiB"
         machine_type: "uefi"
         
         storage_devices:
@@ -196,7 +195,7 @@ spec:
             type: "virtio_disk"
             source: "centos-stream"
             boot: 1
-            capacity: 85899345920  # 80 GB
+            capacity: "80 GB"
         
         network_devices:
           - name: "eth0"
@@ -238,8 +237,8 @@ spec:
               - restorecon -R /var/www/html
           
           meta_data: |
-            instance-id: centos-stream-{{ instance_id }}
-            local-hostname: centos-stream-{{ instance_id }}
+            instance-id: centos-stream
+            local-hostname: centos-stream
 ```
 
 ## Development Environment
@@ -252,7 +251,7 @@ Linux development environment with common tools and IDEs.
 type: Application
 version: "1.0.0"
 metadata:
-  name: "dev-environment-{{ developer_id }}"
+  name: "dev-environment"
   labels:
     - "purpose:development"
     - "team:engineering"
@@ -261,15 +260,15 @@ spec:
     - name: "ubuntu-dev"
       type: "virtual_disk"
       format: "raw"
-      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04-dev.img"
+      url: "https://your-dev-image-url.img"
   
   resources:
     - type: "virdomain"
-      name: "dev-env-{{ developer_id }}"
+      name: "dev-env"
       spec:
         description: "Linux development environment"
         cpu: 4
-        memory: "8589934592"  # 8 GB
+        memory: "8 GiB"
         machine_type: "uefi"
         
         storage_devices:
@@ -277,10 +276,10 @@ spec:
             type: "virtio_disk"
             source: "ubuntu-dev"
             boot: 1
-            capacity: 107374182400  # 100 GB
+            capacity: "100 GB"
           - name: "projects-disk"
             type: "virtio_disk"
-            capacity: 214748364800  # 200 GB
+            capacity: "200 GB"
         
         network_devices:
           - name: "eth0"
@@ -358,8 +357,8 @@ spec:
               - snap install postman
           
           meta_data: |
-            instance-id: dev-env-{{ developer_id }}
-            local-hostname: dev-env-{{ developer_id }}
+            instance-id: dev-env
+            local-hostname: dev-env
 ```
 
 ## Common Linux Patterns
@@ -425,6 +424,7 @@ runcmd:
 ### 1. Template Management
 
 - **Use shutoff state** for template VMs
+- **Set CPU to 0** prevents accidental bootup of templates
 - **Minimize template size** for faster cloning
 - **Include essential packages** only
 - **Document template contents**
