@@ -10,9 +10,14 @@ Before you begin, ensure you have:
 - [x] Kraken Fleet Manager UI or API access
 - [x] Basic understanding of YAML syntax
 
-## Step 1: Your First Manifest
+## Step 1: Create Your First Application Manifest
 
-Let's create a simple virtual machine manifest. Create a file called `my-first-vm.yaml`:
+Let's create a simple virtual machine manifest. 
+
+1. Open the "Deployments" page of fleet.sclaecomputing.com
+2. Select "Applications"
+3. Add an application titled "My First VM"
+4. Copy-paste the following into the manifest code editor
 
 ```yaml title="my-first-vm.yaml"
 type: Application
@@ -29,13 +34,13 @@ spec:
       spec:
         description: "My first Kraken VM"
         cpu: 2
-        memory: "2147483648"  # 2 GB
+        memory: "2 GB"
         machine_type: "uefi"
         state: "running"
         storage_devices:
           - name: "main-disk"
             type: "virtio_disk"
-            capacity: 21474836480  # 20 GB
+            capacity: "20 GB"
             boot: 1
         network_devices:
           - name: "eth0"
@@ -53,23 +58,31 @@ spec:
 - **Sets up networking**: Single VirtIO network interface
 - **Starts the VM**: `state: "running"`
 
-## Step 2: Deploy Your Manifest
+## Step 2: Select Your Target CLusters
 
-1. **Log in** to your Fleet Manager UI
-2. **Navigate** to the Applications section
-3. **Click** "Create Application"
-4. **Paste** your manifest into the editor
-5. **Click** "Deploy"
+1. **Open** the Deployments page in Fleet Manager
+2. **Navigate** to the Cluster Groups section
+3. **Click** "Create Cluster Group"
+4. **Select** a desired test cluster or two
+5. **Click** "Save
 
-## Step 3: Monitor Deployment
+## Step 3: Create and run Deployment
 
+1. **Open** the Deployments page in Fleet Manager
+2. **Click** "Add Deployment"
+3. **Name** your deployment
+3. **Select** the cluster group you created
+4. **Attach** the application you created
+5. **Click** "Save
+6. **Click** Deploy to send your application(s) to the cluster(s) in your cluster group
+
+## Step 4: Monitor Deployment
 
 1. **Check** the Deployments dashboard
 2. **Monitor** deployment progress
 3. **View** resource status and logs
 
-
-## Step 4: Verify Your VM
+## Step 5: Verify Your VM
 
 Once deployed, verify your VM is running:
 
@@ -77,11 +90,12 @@ Once deployed, verify your VM is running:
 2. **Verify resource allocation** matches your manifest
 3. **Test network connectivity** if needed
 
-## Step 5: Next Steps
+## Step 6: Next Steps
 
 Now that you have a basic VM running, try these updates. 
 
 To make updates to deployed VMs:
+
 1. Open the application record
 2. Edit the manifest
 3. Save the application
@@ -111,7 +125,7 @@ spec:
             type: "virtio_disk"
             source: "ubuntu-image"  # Reference the asset
             boot: 1
-            capacity: 32212254720  # 30 GB
+            capacity: "30 GB"
 ```
 
 ### Add Cloud-Init Configuration
