@@ -58,7 +58,7 @@ spec:
 - **Sets up networking**: Single VirtIO network interface
 - **Starts the VM**: `state: "running"`
 
-## Step 2: Select Your Target CLusters
+## Step 2: Select Your Target Clusters
 
 1. **Open** the Deployments page in Fleet Manager
 2. **Navigate** to the Cluster Groups section
@@ -107,7 +107,7 @@ To make updates to deployed VMs:
 **Warning**: Updating the name will _create a new_ VM. Updating the VM name is currently not supported.
 
 ### Add an External Disk Image
-
+Non-ISO (raw .img)
 ```yaml
 spec:
   assets:
@@ -126,6 +126,28 @@ spec:
             source: "ubuntu-image"  # Reference the asset
             boot: 1
             capacity: "30 GB"
+```
+ISO (note different assets.format, storage_devices.type, and the separation of boot ISO ide_cdrom and the virtio_disk for VM storage)
+```yaml
+spec:
+  assets:
+    - name: "ubuntu-image"
+      type: "virtual_disk"
+      format: "iso"
+      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04.img"
+  resources:
+    - type: virdomain
+      name: "ubuntu-vm"
+      spec:
+        # ... other configuration
+        storage_devices:
+          - name: "os-cdrom"
+            type: "ide_cdrom"
+            source: "ubuntu-image"  # Reference the asset
+            boot: 1
+          - name: "ubuntu-storage"
+            type: "virtio_disk"
+            capacity: "100 GB"
 ```
 
 ### Add Cloud-Init Configuration
