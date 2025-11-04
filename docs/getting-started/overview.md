@@ -88,7 +88,7 @@ resources:
     name: "web-server"
     spec:
       cpu: 2
-      memory: "4294967296"
+      memory: "4 GiB"
       state: "running"
 ```
 
@@ -103,7 +103,7 @@ metadata:                     # Application metadata
   name: "app-name"
   labels: []
 spec:                         # Main specification
-  assets: []                  # External resources
+  assets: []                  # External resources (Media)
   resources: []               # Infrastructure components
 ```
 
