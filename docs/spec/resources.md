@@ -1,6 +1,6 @@
 # Resources Specification
 
-Resources define the infrastructure components that make up your Kraken application. Currently, the primary resource type is `virdomain` (virtual machines), but the specification is designed to support additional resource types in the future.
+Resources define the infrastructure components that make up your Kraken application. Currently, the only resource type is `virdomain` (virtual machines), but the specification is designed to support additional resource types in the future.
 
 ## Resource Structure
 
@@ -46,7 +46,7 @@ resources:
     spec:
       description: "Virtual machine description"
       cpu: 2
-      memory: "4294967296"
+      memory: 4 GiB
       machine_type: "uefi"
       state: "running"
       storage_devices: []
@@ -107,6 +107,7 @@ spec:
       spec:
         storage_devices:
           - name: "root-disk"
+            type: "virtio_disk" # Ensure type is appropriate for the source's asset format. ISOs must be attached as type "ide_cdrom"
             source: "ubuntu-image"  # References the asset
 ```
 
@@ -180,19 +181,6 @@ resources:
       tags: ["production"]
 ```
 
-### Environment-Specific Resources
-
-```yaml
-resources:
-  - type: "virdomain"
-    name: "app-{{ environment }}"
-    spec:
-      cpu: "{{ cpu_count }}"
-      memory: "{{ memory_size }}"
-      tags: 
-        - "{{ environment }}"
-        - "{{ application }}"
-```
 
 ## Resource Validation
 
@@ -236,7 +224,7 @@ All resources are validated against the Kraken schema:
 
 The resource specification is designed to support additional resource types:
 
-### Planned Resource Types
+### Potential Future Resource Types
 
 - **Container**: Container-based applications
 - **Network**: Network configurations and VLANs
@@ -249,8 +237,6 @@ The resource specification is designed to support additional resource types:
 The resource specification supports:
 
 - **Versioning**: Schema evolution support
-- **Custom fields**: Provider-specific extensions
-- **Plugin architecture**: Third-party resource types
 - **Validation**: Extensible validation rules
 
 ## Related Documentation
