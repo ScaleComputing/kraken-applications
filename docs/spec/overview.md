@@ -58,7 +58,7 @@ resources:
     spec:
       description: "Virtual machine description"
       cpu: 2
-      memory: "4294967296"
+      memory: "4 GiB"
       machine_type: "uefi"
       state: "running"
 ```
@@ -85,19 +85,22 @@ assets:
 
 ### Memory Values
 
-Memory specifications use bytes as the unit:
+Memory can be specified in human readable formats, or bytes:
 
 ```yaml
+memory: 4 GiB
+memory: 16 GiB
 memory: "4294967296"    # 4 GB
-memory: "8589934592"    # 8 GB
 memory: "17179869184"   # 16 GB
 ```
 
 ### Storage Capacity
 
-Storage capacity also uses bytes:
+Storage capacity can be specified in human readable formats, or bytes:
 
 ```yaml
+capacity: 50 GB
+capacity: 100 GB
 capacity: 50000000000   # ~50 GB
 capacity: 107374182400  # 100 GB
 ```
@@ -108,27 +111,27 @@ Dynamic values using template syntax:
 
 ```yaml
 metadata:
-  name: "app-{{ app_id }}"
+  name: "app-{{ cluster_name }}"
 ```
 
 ## Validation Rules
 
 ### Naming Conventions
 
-- **Application names**: Must be unique, lowercase, alphanumeric with hyphens
-- **Resource names**: Must be unique within the manifest
-- **Asset names**: Must be unique within the manifest
+- **Application names**: Must be unique, lowercase, alphanumeric with hyphens or underscores
+- **Resource names**: Must be unique within the manifest.
+- **Asset names**: Must be unique within the manifest.
 
 ### Resource Constraints
 
-- **CPU**: Minimum 1, maximum depends on cluster capacity
-- **Memory**: Minimum 100MB, maximum depends on cluster capacity
+- **CPU**: Minimum 1 (vCPU Core), maximum depends on cluster capacity
+- **Memory**: Minimum 100 MiB, maximum depends on cluster capacity
 - **Storage**: Minimum 1GB, maximum depends on cluster capacity
 
 ### Asset Requirements
 
 - **URLs**: Must be publicly accessible HTTPS URLs
-- **Formats**: Supported formats: raw, qcow2, iso
+- **Formats**: Supported formats: raw, iso (support for .qcow2, .vmdk, etc. coming by end of 2025)
 - **Size**: Assets should be optimized for network transfer
 
 ## Schema Validation
@@ -173,14 +176,6 @@ For the full schema and details on it's use, check out the [schema reference](ht
 - Full feature set supported
 - Backward compatible with pre-1.0 manifests
 
-### Migration from Legacy Versions
-
-For manifests using `version: 1` (legacy):
-
-1. Update to `version: "1.0.0"`
-2. Validate against current schema
-3. Test in development environment
-4. Deploy to production
 
 ## Extensions and Custom Fields
 
