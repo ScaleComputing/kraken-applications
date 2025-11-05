@@ -26,19 +26,18 @@ spec:
       spec:
         description: A simple VM for testing
         cpu: 2
-        memory: "100000000"  # ~95 MB
+        memory: 100 MiB
         machine_type: uefi
         
         storage_devices:
           - name: cdrom1
             type: ide_cdrom
-            boot: 1
           - name: disk1
             source: test-disk
-            boot: 2
+            boot: 1
           - name: disk2
             type: virtio_disk
-            capacity: 100000000000  # ~93 GB
+            capacity: 100 GB
         
         network_devices:
           - name: nic1
@@ -60,13 +59,13 @@ This simple manifest demonstrates:
 - **Asset reference**: Storage device references the asset by name
 
 #### Multiple Storage Devices
-- **IDE CD-ROM**: Primary boot device (boot: 1)
-- **Asset disk**: Secondary boot from the netboot.xyz image (boot: 2)  
+- **IDE CD-ROM**: Attached for optionality
+- **Asset disk**: Primary boot from the netboot.xyz image (boot: 1)  
 - **VirtIO disk**: Large capacity disk for data storage
 
 #### Basic Configuration
 - **CPU**: 2 virtual cores
-- **Memory**: ~95 MB (minimal allocation)
+- **Memory**: 100 MiB (minimal allocation)
 - **Network**: Single VirtIO network interface
 - **Machine type**: UEFI for modern boot support
 
@@ -96,47 +95,6 @@ This pattern is useful for:
 - **Sharing common assets** across multiple applications
 - **Testing asset availability** before deployment
 
-## Common Configuration Patterns
-
-### Memory Specification
-
-```yaml
-# Always use string format for memory
-memory: "4294967296"  # 4 GB
-memory: "8589934592"  # 8 GB
-memory: "100000000"   # ~95 MB (minimal)
-```
-
-### Storage Device Types
-
-```yaml
-storage_devices:
-  - name: cdrom1
-    type: ide_cdrom     # For CD/DVD images
-  - name: disk1
-    type: virtio_disk   # High-performance disk
-    source: asset_name  # Reference to asset
-    boot: 1            # Boot priority
-    capacity: 50000000000  # Size in bytes
-```
-
-### Network Configuration
-
-```yaml
-network_devices:
-  - name: eth0
-    type: virtio  # High-performance network
-  - name: nic1
-    type: virtio  # Alternative naming
-```
-
-### Machine Types
-
-```yaml
-machine_type: uefi    # Modern Linux systems
-machine_type: tpm     # Windows with security features
-machine_type: bios    # Legacy systems or GPU VMs
-```
 
 ## Best Practices from Examples
 
