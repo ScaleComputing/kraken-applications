@@ -16,7 +16,7 @@ resources:
       description: "Human-readable description"
       os: windows
       cpu: 2
-      memory: "4294967296"
+      memory: 4 GiB
       machine_type: "uefi"
       state: "running"
       storage_devices: []
@@ -54,20 +54,20 @@ resources:
 ### memory
 - **Type**: `string`
 - **Description**: RAM allocation in bytes or Integers with human readable units
-- **Minimum**: 100000000 (95 MiB)
+- **Minimum**: 100 MiB
 - **Maximum**: Largest Node's Free RAM capacity
 - **Examples**:(All equal 4 GiB)
-  - `memory: "4294967296"`
-  - `memory: "4000MiB"`
-  - `memory: "4GiB"`
+    - `memory: "4294967296"`
+    - `memory: "4000MiB"`
+    - `memory: "4GiB"`
 
 ### machine_type
 - **Type**: `string`
 - **Description**: Virtual machine firmware type
 - **Values**:
-  - `"uefi"` - Modern UEFI boot (recommended)
-  - `"bios"` - Legacy BIOS boot
-  - `"tpm"` - TPM-enabled for Windows security features
+    - `"uefi"` - Modern UEFI boot (recommended)
+    - `"bios"` - Legacy BIOS boot
+    - `"tpm"` - TPM-enabled for Windows security features
 - **Example**: `machine_type: "uefi"`
 
 ### state
@@ -131,7 +131,7 @@ storage_devices:
 
 ### Storage Device Types
 
-#### virtio_disk
+##### virtio_disk
 High-performance virtual disk (recommended):
 
 ```yaml
@@ -141,7 +141,7 @@ High-performance virtual disk (recommended):
   boot: 1
 ```
 
-#### ide_cdrom
+##### ide_cdrom
 IDE CD-ROM for ISO images:
 
 ```yaml
@@ -247,7 +247,7 @@ cloud_init_data:
 
 **[Full Cloud-Init Reference →](cloud-init.md)**
 
-## Complete Example
+## Complete Example (not including ISO Asset referenced  as source for storage_dives "os-disk")
 
 ```yaml
 resources:
@@ -256,23 +256,19 @@ resources:
     spec:
       description: "Production web server with database"
       cpu: 4
-      memory: "8589934592"  # 8 GB
+      memory: 8 GiB
       machine_type: "uefi"
       state: "running"
       
       storage_devices:
         - name: "os-disk"
-          type: "virtio_disk"
+          type: "ide_cdrom"
           source: "ubuntu-image"
           boot: 1
-          capacity: 53687091200  # 50 GB
+          capacity: 50 GB
         - name: "data-disk"
           type: "virtio_disk"
-          capacity: 214748364800  # 200 GB
-        - name: "backup-cd"
-          type: "ide_cdrom"
-          source: "backup-iso"
-          boot: 2
+          capacity: 200 GB
       
       network_devices:
         - name: "eth0"
@@ -330,15 +326,15 @@ Match resources to workload requirements:
 ```yaml
 # Web Server
 cpu: 2
-memory: "4294967296"      # 4 GB
+memory: 4 GiB
 
 # Database Server
 cpu: 4
-memory: "8589934592"      # 8 GB
+memory: 8 GiB
 
 # Development VM
 cpu: 1
-memory: "2147483648"      # 2 GB
+memory: 2 GiB
 ```
 
 ### 2. Storage Layout
@@ -348,13 +344,13 @@ Separate OS and data storage:
 ```yaml
 storage_devices:
   - name: "os-disk"
-    type: "virtio_disk"
+    type: "ide_cdrom"
     source: "os-image"
     boot: 1
-    capacity: 32212254720    # 30 GB
+    capacity: 30 GB
   - name: "data-disk"
     type: "virtio_disk"
-    capacity: 107374182400   # 100 GB
+    capacity: 100 GB
 ```
 
 ### 3. Network Configuration
@@ -367,18 +363,6 @@ network_devices:
     type: "virtio"
   - name: "data-interface"
     type: "virtio"
-```
-
-### 4. Tagging Strategy
-
-Use consistent tags for organization:
-
-```yaml
-tags:
-  - "{{ environment }}"     # production, staging, development
-  - "{{ application }}"     # web, database, cache
-  - "{{ team }}"           # platform, backend, frontend
-  - "{{ backup-policy }}"  # daily, weekly, none
 ```
 
 ## Common Patterns
@@ -407,11 +391,11 @@ storage_devices:
 
 ```yaml
 cpu: 8
-memory: "17179869184"  # 16 GB
+memory: 16 GiB
 storage_devices:
   - name: "nvme-disk"
     type: "virtio_disk"
-    capacity: 214748364800  # 200 GB
+    capacity: 200 GB
 ```
 
 ## Troubleshooting
