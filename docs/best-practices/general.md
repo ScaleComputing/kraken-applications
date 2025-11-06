@@ -4,7 +4,7 @@ This guide covers general best practices for creating robust, maintainable, and 
 
 ## Manifest Organization
 
-### 1. Use Descriptive Names
+### Use Descriptive Names
 
 ✅ **Good**:
 ```yaml
