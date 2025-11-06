@@ -1,6 +1,6 @@
 # General Best Practices
 
-This guide covers essential best practices for creating robust, maintainable, and efficient Kraken applications.
+This guide covers general best practices for creating robust, maintainable, and efficient Kraken applications. For more detailed troubleshooting and bets practices, see the releavnt section over in the Manifest Schema portion of the documentation.
 
 ## Manifest Organization
 
@@ -22,37 +22,16 @@ resources:
   - name: "vm2"
 ```
 
-### 2. Consistent Labeling
-
-```yaml
-labels:
-  - "environment:{{ env }}"
-  - "team:{{ team }}"
-  - "application:{{ app_name }}"
-  - "version:{{ version }}"
-```
-
-### 3. Template Variables
-
-Use variables for dynamic values:
-
-```yaml
-metadata:
-  name: "{{ app_name }}-{{ env }}"
-  labels:
-    - "instance:{{ instance_id }}"
-```
-
 ## Resource Sizing
 
 ### Memory Guidelines
 
 | Application Type | Recommended Memory |
 |------------------|--------------------|
-| Web Server | 2-4 GB |
-| Database | 8-16 GB |
-| Application Server | 4-8 GB |
-| Development VM | 2-4 GB |
+| Web Server | 2-4 GiB |
+| Database | 8-16 GiB |
+| Application Server | 4-8 GiB |
+| Development VM | 2-4 GiB |
 
 ### CPU Allocation
 
@@ -66,26 +45,23 @@ metadata:
 ```yaml
 storage_devices:
   - name: "os-disk"
-    capacity: 32212254720   # 30 GB - OS and apps
+    capacity: 30 GB   # OS
     boot: 1
   - name: "data-disk"
-    capacity: 107374182400  # 100 GB - Application data
+    capacity: 100 GB  # Application data
 ```
 
 ## Configuration Management
 
-### Environment-Specific Values
+### Variables
 
-```yaml
-# Use template variables
-cpu: "{{ cpu_count | default(2) }}"
-memory: "{{ memory_size | default('4294967296') }}"
+There are currently two "native" variables to help ensure cluster-specific names for resources, such as VMs
+- {{clusterName}} - inserts the name of the target cluster at time of deployment
+- {{clusterId}} - Inserts the 36-character UUID of the target cluster
+Ex. If your clusters are named Store 1, Store 2, Store 3, etc. you can specify your POS vm name as "POS-{{cluster_name}}" so that the deployed VMs are all unique and clearly identified by store "POS-Store1", etc..
 
-# Environment-specific labels
-labels:
-  - "environment:{{ env }}"
-  - "monitoring:{{ monitoring_enabled | default('true') }}"
-```
+YAML anchors are also supported, to help avoid repetition in longer manifests, and make manifests easier to maintain.
+Check out the [Gitlab documentation](https://docs.gitlab.com/ci/yaml/yaml_optimization/) to learn more.
 
 ### Asset Management
 
@@ -106,6 +82,7 @@ assets:
 # Create templates in shutoff state
 spec:
   state: "shutoff"
+  cpu: 0
   tags:
     - "template"
     - "base-image"
@@ -136,26 +113,6 @@ spec:
         # Resource configuration follows...
 ```
 
-### README Files
-
-Include README.md with each manifest:
-
-```markdown
-# Web Server Application
-
-## Overview
-This manifest deploys a high-availability web server.
-
-## Requirements
-- Minimum 4 GB RAM
-- 50 GB storage
-- HTTPS asset access
-
-## Deployment
-1. Update template variables
-2. Submit to Fleet Manager
-3. Monitor deployment status
-```
 
 ## Version Control
 
@@ -224,44 +181,32 @@ labels:
 - name: "web-tier"
   spec:
     cpu: 2
-    memory: "4294967296"
+    memory: 4 GiB
     tags: ["web", "frontend"]
 
 # App tier
 - name: "app-tier"
   spec:
     cpu: 4
-    memory: "8589934592"
+    memory: 8 GiB
     tags: ["app", "backend"]
 
 # Data tier
 - name: "data-tier"
   spec:
     cpu: 4
-    memory: "16106127360"
+    memory: 16 GiB
     tags: ["database", "data"]
 ```
 
-### Development vs Production
-
-```yaml
-# Development
-cpu: "{{ dev_cpu | default(1) }}"
-memory: "{{ dev_memory | default('2147483648') }}"
-
-# Production
-cpu: "{{ prod_cpu | default(4) }}"
-memory: "{{ prod_memory | default('8589934592') }}"
-```
 
 ## Troubleshooting
 
 ### Common Issues
 
 1. **Asset URL failures**: Use HTTPS and verify accessibility
-2. **Memory format errors**: Always use string format for memory
-3. **Name conflicts**: Ensure unique names within manifest
-4. **Boot order issues**: Set proper boot priorities
+2. **Name conflicts**: Ensure unique names within manifest
+3. **Boot order issues**: Set proper boot priorities
 
 ### Debugging Tips
 
