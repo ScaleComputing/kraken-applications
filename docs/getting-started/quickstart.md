@@ -28,19 +28,28 @@ metadata:
     - "environment:development"
     - "purpose:learning"
 spec:
+  assets:
+    - name: "alpine-virt-iso"
+      type: "virtual_disk"
+      format: "iso"
+      url: "https://dl-cdn.alpinelinux.org/alpine/v3.22/releases/x86_64/alpine-virt-3.22.2-x86_64.iso" 
   resources:
     - type: virdomain
-      name: "quickstart-vm"
+      name: "quickstart-vm {{clusterName}}"
       spec:
         description: "My first Kraken VM"
-        cpu: 2
-        memory: "2 GB"
-        machine_type: "uefi"
+        cpu: 1
+        memory: "2 GiB"
+        machine_type: "bios"
         state: "running"
         storage_devices:
-          - name: "main-disk"
+          - name: "alpine-iso"
+            type: "ide_cdrom"
+            source: "alpine-virt-iso"
+            boot: 2
+          - name: "storage_disk"
             type: "virtio_disk"
-            capacity: "20 GB"
+            capacity: "10 GB"
             boot: 1
         network_devices:
           - name: "eth0"
@@ -52,9 +61,9 @@ spec:
 
 ### What This Manifest Does
 
-- **Creates a VM** named "quickstart-vm"
-- **Allocates resources**: 2 CPU cores, 2 GB RAM
-- **Configures storage**: 20 GB VirtIO disk
+- **Creates a VM** named "quickstart-vm [your cluster name]"
+- **Allocates resources**: 1 CPU core, 2 GiB RAM
+- **Configures storage**: 10 GB VirtIO disk
 - **Sets up networking**: Single VirtIO network interface
 - **Starts the VM**: `state: "running"`
 
@@ -106,50 +115,6 @@ To make updates to deployed VMs:
 
 **Warning**: Updating the name will _create a new_ VM. Updating the VM name is currently not supported.
 
-### Add an External Disk Image
-Non-ISO (raw .img)
-```yaml
-spec:
-  assets:
-    - name: "ubuntu-image"
-      type: "virtual_disk"
-      format: "raw"
-      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04.img"
-  resources:
-    - type: virdomain
-      name: "ubuntu-vm"
-      spec:
-        # ... other configuration
-        storage_devices:
-          - name: "os-disk"
-            type: "virtio_disk"
-            source: "ubuntu-image"  # Reference the asset
-            boot: 1
-            capacity: "30 GB"
-```
-ISO (note different assets.format, storage_devices.type, and the separation of boot ISO ide_cdrom and the virtio_disk for VM storage)
-```yaml
-spec:
-  assets:
-    - name: "ubuntu-image"
-      type: "virtual_disk"
-      format: "iso"
-      url: "https://storage.googleapis.com/demo-bucket/ubuntu-22.04.img"
-  resources:
-    - type: virdomain
-      name: "ubuntu-vm"
-      spec:
-        # ... other configuration
-        storage_devices:
-          - name: "os-cdrom"
-            type: "ide_cdrom"
-            source: "ubuntu-image"  # Reference the asset
-            boot: 1
-          - name: "ubuntu-storage"
-            type: "virtio_disk"
-            capacity: "100 GB"
-```
-
 ### Add Cloud-Init Configuration
 
 ```yaml
@@ -180,51 +145,13 @@ spec:
   resources:
     - type: virdomain
       spec:
-        cpu: 4                    # Double the CPU
-        memory: "4294967296"      # Double the RAM (4 GB)
+        cpu: 2                    # Double the CPU
+        memory: "4 GiB"      # Double the RAM
         storage_devices:
-          - name: "main-disk"
+          - name: "storage-disk"
             type: "virtio_disk"
-            capacity: 53687091200  # Increase to 50 GB
+            capacity: "20 GB"  # Double the Storage
             boot: 1
-```
-
-## Common Patterns
-
-### Development VM
-
-Perfect for testing and development:
-
-```yaml
-cpu: 2
-memory: "2147483648"      # 2 GB
-capacity: 32212254720     # 30 GB
-state: "running"
-tags: ["development", "testing"]
-```
-
-### Template VM
-
-Create a template for cloning:
-
-```yaml
-cpu: 2
-memory: "4294967296"      # 4 GB
-capacity: 32212254720     # 30 GB
-state: "shutoff"          # Template state
-tags: ["template", "base-image"]
-```
-
-### Production VM
-
-Production-ready configuration:
-
-```yaml
-cpu: 4
-memory: "8589934592"      # 8 GB
-capacity: 107374182400    # 100 GB
-state: "running"
-tags: ["production", "monitored"]
 ```
 
 ## Troubleshooting
