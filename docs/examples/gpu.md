@@ -14,7 +14,7 @@ GPU applications in Kraken provide:
 
 ## YOLO Object Detection Application
 
-This example deploys a complete GPU-enabled virtual machine running a YOLO object detection container. The manifest is based on the actual `yolo-object-detection/manifest.yaml` in this repository.
+This example deploys a complete GPU-enabled virtual machine running a YOLO object detection container.
 
 ### YOLO Object Detection Manifest
 
@@ -40,7 +40,7 @@ spec:
       spec:
         description: VM with Nvidia Drivers, Docker, and YOLO container
         cpu: 8
-        memory: "12894967296"  # ~12 GB
+        memory: 12 GiB
         machine_type: "bios"   # GPU VMs often use BIOS
         
         storage_devices:
@@ -48,7 +48,7 @@ spec:
             type: virtio_disk
             source: "ubuntu_gpu_base"
             boot: 1
-            capacity: 30000000000  # 30 GB
+            capacity: 30 GB
         
         network_devices:
           - name: eth0
@@ -216,11 +216,11 @@ After deployment, you can access the YOLO object detection service:
 ```yaml
 # For lighter workloads
 cpu: 4
-memory: "8589934592"  # 8 GB
+memory: 8 GiB
 
 # For heavier ML workloads  
 cpu: 16
-memory: "34359738368"  # 32 GB
+memory: 32 GiB
 ```
 
 ### Storage Allocation
@@ -228,9 +228,9 @@ memory: "34359738368"  # 32 GB
 ```yaml
 storage_devices:
   - name: disk1
-    capacity: 30000000000   # 30 GB - minimal
+    capacity: 30 GB   # minimal
   - name: disk1  
-    capacity: 107374182400  # 100 GB - recommended
+    capacity: 100 GB  # recommended
 ```
 
 ### Container Configuration
