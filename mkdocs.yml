@@ -128,7 +128,7 @@ nav:
       - Basic Examples: examples/basic.md
       - Linux Templates: examples/linux.md
       - Windows Templates: examples/windows.md
-      - Backup Appliance: examples/backup-appliances.md
+      - Backup Appliances: examples/backup-appliances.md
       - Multi-VM Applications: examples/multi-vm.md
       - Kubernetes: examples/kubernetes.md
       - GPU Applications: examples/gpu.md
