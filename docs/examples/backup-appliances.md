@@ -140,8 +140,8 @@ memory: 16 GiB
 
 ### 2. Fine-tune resource usage
 
-- SPread backups to reduce the number of concurrent jobs at any one time
-- Check VM resource utilization during peak backups, adding or reducing resources as needed.
+- Spread backup schedules to reduce the number of concurrent jobs at any one time
+- Check VM resource utilization during peak backups, adding or reducing resources as needed
 
 ### 3. Create an SOP for backup configuration
 
