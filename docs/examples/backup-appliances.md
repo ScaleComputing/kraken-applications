@@ -1,20 +1,20 @@
 # Backup Appliances
 
-This section demonstrates deployment of Virtual Backup Appliances from Scale Computing partners using Kraken manifests. Any backup solution can be implemented using in-guest agents, but these "agentless" solutions are significantly simpler to setup and maintain. Note that a separate license is requird to leverage the Acronis and Veeam backup solutions. 
+This section demonstrates deployment of Virtual Backup Appliances from Scale Computing partners using Kraken manifests. Any backup solution can be implemented using in-guest agents, but these "agentless" solutions are significantly simpler to setup and maintain. Note that a separate license is requird to leverage the Acronis and Veeam backup solutions.  
+
 Contact your Acronis, Veeam, or Scale Computing sales rep for more information.
 
 ## Examples
 
-## Acronis
+### Acronis
 
 This example deploys a Acronis Virtual Backup Appliance, which can then be quickly configured following the instructions in the links below. You should be familiar with the official Acronis installation instructions nad make adjustments as necessary, such as updating to the latest self-hosted agent image. https://www.acronis.com/en/support/documentation/CyberProtectionService/index.html#installing-software.html
 
-User Community Link: https://community.scalecomputing.com/s/article/SC-Services-Acronis-Backup-Quickstart-Guide
+User Community Link: https://community.scalecomputing.com/s/article/SC-Services-Acronis-Backup-Quickstart-Guide  
+
 Partner Portal Link: https://partners.scalecomputing.com/English/VAR_Scale/sfdc_knowledge/knowledge_detail.aspx?id=000005835
 
-### Acronis Virtual Backup Appliance Manifest
-
-```yaml title="acronis-virtual-appliance/manifest.yaml"
+```
 type: Application
 version: "1.0.0"
 metadata:
@@ -57,14 +57,15 @@ spec:
         state: "running"  
 ```
 
-## Veeam
+### Veeam
 
 This example deploys a Veeam Virtual Backup Appliance, which can then be quickly configured following the instructions in the links below. We recommend being familiar with the official Veeam installation instructions nad making adjustments as necessary, such as updating to a latest self-hosted agent image. https://helpcenter.veeam.com/docs/vpsch/userguide/overview.html?ver=2
 
-User Community Link: https://community.scalecomputing.com/s/article/Download-Links-for-Veeam-SC-HyperCore-Plug-in-1-0
+User Community Link: https://community.scalecomputing.com/s/article/Download-Links-for-Veeam-SC-HyperCore-Plug-in-1-0  
+
 Partner Portal Link: https://partners.scalecomputing.com/English/VAR_Scale/sfdc_knowledge/knowledge_detail.aspx?id=000006504
 
-```yaml title="veeam-virtual-appliance/manifest.yaml"
+```
 type: Application
 version: "1.0.0"
 metadata:
