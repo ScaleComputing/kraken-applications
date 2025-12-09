@@ -14,7 +14,7 @@ Before you begin, ensure you have:
 
 Let's create a simple virtual machine manifest. 
 
-1. Open the "Deployments" page of fleet.sclaecomputing.com
+1. Open the "Deployments" page of fleet.scalecomputing.com
 2. Select "Applications"
 3. Add an application titled "My First VM"
 4. Copy-paste the following into the manifest code editor
