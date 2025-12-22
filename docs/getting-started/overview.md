@@ -16,10 +16,12 @@ In this getting started section, you'll discover:
 
 Before you begin, ensure you have:
 
-- Access to a Scale Computing HyperCore environment
+- Access to a Scale Computing HyperCore cluster which meets the following requirements
+    - HyperCore version 9.6.6+
+    - DNS configured
+    - Network access to kraken-tunnel.scalecomputing.com over Port 443 TCP
 - Basic understanding of YAML syntax
-- Familiarity with virtualization concepts
-- (Optional) Experience with cloud-init for advanced configurations
+- Familiarity with creating VMs on HyperCore
 
 ## Core Concepts
 
