@@ -107,12 +107,24 @@ capacity: 107374182400  # 100 GB
 
 ### Template Variables
 
-Dynamic values using template syntax:
+> [!NOTE]
+> The template variable names and syntax are an experimental feature and subject to change.
+
+Fleet Manager supports the following dynamic values:
+- `clusterName`: the name of the target cluster
+- `clusterId`: the ID of the target cluster
+
+Values can be included in the manifest using the following template syntax:
 
 ```yaml
-metadata:
-  name: "app-{{ cluster_name }}"
+resources:
+  - type: virdomain
+    name: "vm-{{ clusterName }}"
+    description: "This VM is on cluster_name={{clusterName}} cluster_id={{clusterId}}"
 ```
+
+> [!TIP]
+> Kraken uses the application `metadata.name` field to uniquely identify applications. Due to this behavior, it is recommended to use dynamic values in resource definitions only and not in application metadata to avoid creating duplicate applications.
 
 ## Validation Rules
 
