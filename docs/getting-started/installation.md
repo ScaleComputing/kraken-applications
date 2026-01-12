@@ -1,18 +1,18 @@
 # Installation
 
-Learn how to set up your environment for developing and deploying Kraken applications.
+Learn how to set up your environment for developing and deploying Fleet Manager applications.
 
 ## Prerequisites
 
 - Access to Scale Computing HyperCore infrastructure
-- Kraken Core API access or Fleet Manager UI
+- Fleet Manager API or UI access
 - Basic understanding of virtualization concepts
 
 ## Development Environment Setup
 
 ### YAML Editor Configuration
 
-Configure your editor with Kraken schema validation:
+Configure your editor with schema validation:
 
 ```json
 {
