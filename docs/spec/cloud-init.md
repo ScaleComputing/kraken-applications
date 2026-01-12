@@ -1,6 +1,6 @@
 # Cloud-Init Specification
 
-Cloud-init is a powerful system for automating the initialization and configuration of virtual machines. Kraken manifests support cloud-init through the `cloud_init_data` field in VirDomain resources, enabling automated VM setup, package installation, and service configuration.
+Cloud-init is a powerful system for automating the initialization and configuration of virtual machines. Application manifests support cloud-init through the `cloud_init_data` field in VirDomain resources, enabling automated VM setup, package installation, and service configuration.
 
 ## Overview
 
@@ -15,7 +15,7 @@ Cloud-init runs during the first boot of a virtual machine and can:
 
 ## Cloud-Init Structure
 
-Cloud-init data in Kraken manifests consists of two main components:
+Cloud-init data in application manifests consists of two main components:
 
 ```yaml
 cloud_init_data:
