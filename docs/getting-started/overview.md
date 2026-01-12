@@ -1,13 +1,13 @@
 # Getting Started Overview
 
-Welcome to Kraken Applications! This guide will help you understand the fundamentals of deploying applications using Kraken's infrastructure automation platform.
+Welcome to Fleet Manager Applications! This guide will help you understand the fundamentals of deploying applications using Fleet Manager.
 
 ## What You'll Learn
 
 In this getting started section, you'll discover:
 
-- How Kraken Applications work
-- The anatomy of a Kraken manifest
+- How Fleet Manager Applications work
+- The anatomy of an application manifest
 - How to deploy your first application
 - Common patterns and best practices
 - Troubleshooting tips
@@ -25,37 +25,15 @@ Before you begin, ensure you have:
 
 ## Core Concepts
 
-### Kraken Manifests
+### Application Manifests
 
-Kraken manifests are YAML files that declaratively define your infrastructure. They specify:
+Application manifests are YAML files that declaratively define your infrastructure. They specify:
 
 - **Virtual machines** and their configurations
 - **Assets** like disk images and ISOs
 - **Network** and storage configurations
 - **Initialization** scripts and cloud-init data
 
-### Deployment Workflow
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant FleetManager as Fleet Manager UI
-    participant PubSub as Google Pub/Sub
-    participant KrakenAPI as Kraken Core API
-    participant Pulumi as Pulumi Engine
-    participant HyperCore as HyperCore Cluster
-
-    User->>FleetManager: Submit Manifest
-    FleetManager->>PubSub: Publish Event
-    PubSub->>KrakenAPI: Process Event
-    KrakenAPI->>KrakenAPI: Validate Manifest
-    KrakenAPI->>Pulumi: Execute Deployment
-    Pulumi->>HyperCore: Provision Resources
-    HyperCore->>Pulumi: Confirm Creation
-    Pulumi->>KrakenAPI: Report Status
-    KrakenAPI->>FleetManager: Update Status
-    FleetManager->>User: Show Results
-```
 
 ### Key Components
 
@@ -96,7 +74,7 @@ resources:
 
 ## Manifest Structure
 
-Every Kraken manifest follows this structure:
+Every application manifest follows this structure:
 
 ```yaml
 type: Application              # Always "Application"
