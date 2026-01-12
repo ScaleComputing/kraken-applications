@@ -1,10 +1,10 @@
 # Linux Templates
 
-This section demonstrates Linux-based virtual machine templates and configurations using Kraken manifests. These examples show how to create, configure, and deploy Linux VMs for various use cases.
+This section demonstrates Linux-based virtual machine templates and configurations using Fleet Manager application manifests. These examples show how to create, configure, and deploy Linux VMs for various use cases.
 
 ## Overview
 
-Linux templates in Kraken provide:
+These Linux templates provide:
 
 - **Base images** for rapid VM deployment
 - **Template VMs** in shutoff state for cloning
