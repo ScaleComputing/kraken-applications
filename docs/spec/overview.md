@@ -1,6 +1,6 @@
 # Manifest Specification Overview
 
-The Kraken manifest specification defines the structure and schema for declaratively describing applications and their infrastructure requirements. This specification enables consistent, version-controlled deployment of complex applications across Scale Computing's HyperCore infrastructure.
+The application manifest specification defines the structure and schema for declaratively describing applications and their infrastructure requirements. This specification enables consistent, version-controlled deployment of complex applications across Scale Computing's HyperCore infrastructure.
 
 ## Schema Version
 
@@ -14,7 +14,7 @@ version: "1.0.0"
 
 ## Manifest Structure
 
-Every Kraken manifest follows this top-level structure:
+Every application manifest follows this top-level structure:
 
 ```yaml
 type: Application              # Resource type (always "Application")
@@ -127,7 +127,7 @@ resources:
 
 !!! tip
 
-    Kraken uses the application `metadata.name` field to uniquely identify applications. Due to this behavior, it is recommended to use dynamic values in resource definitions only and not in application metadata to avoid creating duplicate applications.
+    Fleet Manager uses the application `metadata.name` field to uniquely identify applications. Due to this behavior, it is recommended to use dynamic values in resource definitions only and not in application metadata to avoid creating duplicate applications.
 
 ## Validation Rules
 
