@@ -1,6 +1,6 @@
 # General Best Practices
 
-This guide covers general best practices for creating robust, maintainable, and efficient Kraken applications. For more detailed troubleshooting and bets practices, see the releavnt section over in the Manifest Schema portion of the documentation.
+This guide covers general best practices for creating robust, maintainable, and efficient application manifests. For more detailed troubleshooting and bets practices, see the relevant section over in the Manifest Schema portion of the documentation.
 
 ## Manifest Organization
 
@@ -144,7 +144,7 @@ git commit -m "Fix asset URL in development environment"
 
 ### Validation
 
-Leverage the [Schema Reference](https://scalecomputing.github.io/kraken-applications/spec/schema/) page to validate your Kraken Manifests against the json shcema early and often.
+Leverage the [Schema Reference](https://scalecomputing.github.io/kraken-applications/spec/schema/) page to validate your Application Manifests against the json shcema early and often.
 
 ### Staging First
 
