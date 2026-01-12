@@ -1,12 +1,12 @@
 # Windows Templates
 
-This section demonstrates Windows-based virtual machine templates and configurations using Kraken manifests. These examples show how to create, configure, and deploy Windows VMs for enterprise and development environments.
+This section demonstrates Windows-based virtual machine templates and configurations using Fleet Manager application manifests. These examples show how to create, configure, and deploy Windows VMs for enterprise and development environments.
 
 **NOTE** Windows licensing requires you to source your own Windows images. We recommend deploying pre-configured images whever possible so they are "ready to run" when booted without additional manual configuration post-deployment.
 
 ## Overview
 
-Windows templates in Kraken provide:
+These Windows templates provide:
 
 - **Enterprise Windows** Server and Desktop deployments
 - **TPM support** for Windows security features
