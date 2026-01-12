@@ -1,10 +1,10 @@
 # Resources Specification
 
-Resources define the infrastructure components that make up your Kraken application. Currently, the only resource type is `virdomain` (virtual machines), but the specification is designed to support additional resource types in the future.
+Resources define the infrastructure components that make up your Fleet Manager application. Currently, the only resource type is `virdomain` (virtual machines), but the specification is designed to support additional resource types in the future.
 
 ## Resource Structure
 
-All resources in a Kraken manifest follow this basic structure:
+All resources in an application manifest follow this basic structure:
 
 ```yaml
 spec:
@@ -186,7 +186,7 @@ resources:
 
 ### Schema Validation
 
-All resources are validated against the Kraken schema:
+All resources are validated against the manifest schema:
 
 - **Type checking**: Ensures proper data types
 - **Required fields**: Validates all required fields are present
