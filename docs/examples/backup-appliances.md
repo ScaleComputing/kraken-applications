@@ -1,6 +1,6 @@
 # Backup Appliances
 
-This section demonstrates deployment of Virtual Backup Appliances from Scale Computing partners using Kraken manifests. Any backup solution can be implemented using in-guest agents, but these "agentless" solutions are significantly simpler to setup and maintain. Note that a separate license is requird to leverage the Acronis and Veeam backup solutions.  
+This section demonstrates deployment of Virtual Backup Appliances using Fleet Manager manifests. Any backup solution can be implemented using in-guest agents, but these "agentless" solutions are significantly simpler to setup and maintain. Note that a separate license is requird to leverage the Acronis and Veeam backup solutions.  
 
 Contact your Acronis, Veeam, or Scale Computing sales rep for more information.
 
@@ -52,7 +52,6 @@ spec:
         tags:
           - "acronis"
           - "linux"
-          - "kraken"
 
         state: "running"  
 ```
