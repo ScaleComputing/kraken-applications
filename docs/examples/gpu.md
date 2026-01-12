@@ -1,10 +1,10 @@
 # GPU Applications
 
-This section demonstrates GPU-enabled virtual machine deployment using Kraken manifests. The example shows how to create VMs with NVIDIA GPU support, Docker, and containerized GPU workloads.
+This section demonstrates GPU-enabled virtual machine deployment using Fleet Manager application manifests. The example shows how to create VMs with NVIDIA GPU support, Docker, and containerized GPU workloads.
 
 ## Overview
 
-GPU applications in Kraken provide:
+This GPU applications provide:
 
 - **NVIDIA GPU support** with driver installation
 - **Docker container runtime** with GPU access
