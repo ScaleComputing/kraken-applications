@@ -1,13 +1,13 @@
 # Quick Start Guide
 
-Get up and running with Kraken Applications in minutes! This guide will walk you through creating and deploying your first manifest.
+Get up and running with Fleet Manager Applications in minutes! This guide will walk you through creating and deploying your first manifest.
 
 ## Prerequisites
 
 Before you begin, ensure you have:
 
 - [x] Access to a Scale Computing HyperCore environment
-- [x] Kraken Fleet Manager UI or API access
+- [x] Fleet Manager UI or API access
 - [x] Basic understanding of YAML syntax
 
 ## Step 1: Create Your First Application Manifest
@@ -37,7 +37,7 @@ spec:
     - type: virdomain
       name: "quickstart-vm {{clusterName}}"
       spec:
-        description: "My first Kraken VM"
+        description: "My first FM-Deployed VM"
         cpu: 1
         memory: "2 GiB"
         machine_type: "bios"
@@ -219,9 +219,9 @@ Now that you've deployed your first VM, explore these advanced topics:
 
 Congratulations! You've successfully:
 
-- ✅ Created your first Kraken manifest
+- ✅ Created your first application manifest
 - ✅ Deployed a virtual machine
 - ✅ Learned basic troubleshooting
 - ✅ Explored next steps
 
-You're now ready to build more complex applications with Kraken. Happy deploying! 🎉
+You're now ready to build more complex applications with Fleet Manager. Happy deploying! 🎉
