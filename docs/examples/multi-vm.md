@@ -1,10 +1,10 @@
 # Multi-VM Applications
 
-This section demonstrates how to deploy multiple virtual machines in a single Kraken manifest, enabling complex applications that span multiple VMs with different roles and configurations.
+This section demonstrates how to deploy multiple virtual machines in a single Fleet Manager application manifest, enabling complex applications that span multiple VMs with different roles and configurations.
 
 ## Overview
 
-Multi-VM applications in Kraken enable:
+Multi-VM applications enable:
 
 - **Multi-tier architectures** (web, app, database tiers)
 - **Mixed OS deployments** (Windows and Linux together)
