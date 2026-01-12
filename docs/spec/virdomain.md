@@ -1,6 +1,6 @@
 # VirDomain Specification
 
-The VirDomain resource type is the core component for defining virtual machines in Kraken manifests. This specification covers all configuration options, constraints, and best practices for VirDomain resources.
+The VirDomain resource type is the core component for defining virtual machines in application manifests. This specification covers all configuration options, constraints, and best practices for VirDomain resources.
 
 ## Overview
 
