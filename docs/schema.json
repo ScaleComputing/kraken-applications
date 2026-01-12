@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://kraken.scalecomputing.com/schemas/application/v1.0.0.json",
-  "title": "Kraken Application Manifest",
-  "description": "Schema for Kraken Application manifests version 1.0.0",
+  "title": "Fleet Manager Application Manifest",
+  "description": "Schema for Fleet Manager Application manifests version 1.0.0",
   "type": "object",
   "required": ["type", "version", "metadata", "spec"],
   "properties": {
