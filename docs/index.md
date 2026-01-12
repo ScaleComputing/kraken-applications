@@ -1,10 +1,10 @@
-# Kraken Applications
+# Fleet Manager Applications
 
-Welcome to the comprehensive documentation for **Kraken Applications** – a collection of reference manifests and interactive guides for deploying virtual machines and applications using the Kraken infrastructure automation platform.
+Welcome to the comprehensive documentation for **Fleet Manager Applications** – a collection of reference manifests and interactive guides for deploying virtual machines and applications using Fleet Manager.
 
-## What is Kraken?
+## What are Fleet Manager Deployments?
 
-Kraken is an infrastructure automation platform that simplifies the deployment and management of virtual machines on Scale Computing's HyperCore infrastructure. Using declarative YAML manifests, Kraken enables you to define, version, and deploy complete application stacks with ease.
+Fleet Manager Deployments that simplify the creation and management of virtual machines on Scale Computing's HyperCore infrastructure. Using declarative YAML manifests, Fleet Manager enables you to define, version, and deploy complete application stacks with ease.
 
 ## Key Features
 
@@ -40,7 +40,7 @@ sequenceDiagram
 
 ## Quick Start
 
-Get started with Kraken Applications in just a few steps:
+Get started with Fleet Manager Applications in just a few steps:
 
 1. **[Browse Examples](examples/basic.md)** - Explore ready-to-use manifest templates
 2. **[Read the Specification](spec/overview.md)** - Understand the manifest format
@@ -61,7 +61,7 @@ This documentation is organized into several sections:
 ## Community and Support
 
 - **GitHub**: [kraken-applications](https://github.com/scalecomputing/kraken-applications)
-- **Issues**: Report bugs and request features via slack at #kraken-users
+- **Issues**: Report bugs and request features via pm@scalecomputing.com
 - **Contributing**: [Help improve the documentation] (https://github.com/ScaleComputing/kraken-applications/issues)
 
 ---
