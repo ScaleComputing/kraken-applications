@@ -1,10 +1,10 @@
 # Kubernetes
 
-This section demonstrates Kubernetes deployment using Kraken manifests. The example shows how to deploy a single-node K3s cluster with monitoring stack, based on the actual `single-node-k3s/manifest.yaml` in this repository.
+This section demonstrates Kubernetes deployments with Fleet Manager. The example shows how to deploy a single-node K3s cluster with monitoring stack, based on the actual `single-node-k3s/manifest.yaml` in this repository.
 
 ## Overview
 
-Kubernetes applications in Kraken provide:
+This Kubernetes application provides:
 
 - **Single-node K3s clusters** with monitoring
 - **Automated K3s installation** via cloud-init
