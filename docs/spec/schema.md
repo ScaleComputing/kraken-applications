@@ -1,16 +1,16 @@
 # Schema Reference
 
-This page provides the complete JSON Schema specification for Kraken Application manifests. Use this reference for validation, tooling integration, and programmatic manifest generation.
+This page provides the complete JSON Schema specification for Fleet Manager Application manifests. Use this reference for validation, tooling integration, and programmatic manifest generation.
 
 ## JSON Schema
 
-The complete JSON Schema for Kraken Application manifests is available at [https://scalecomputing.github.io/kraken-applications/schema.json](https://scalecomputing.github.io/kraken-applications/schema.json)
-```json title="kraken-application-schema.json"
+The complete JSON Schema for Application manifests is available at [https://scalecomputing.github.io/kraken-applications/schema.json](https://scalecomputing.github.io/kraken-applications/schema.json)
+```json title="fm-application-schema.json"
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://kraken.scalecomputing.com/schemas/application/v1.0.0.json",
-  "title": "Kraken Application Manifest",
-  "description": "Schema for Kraken Application manifests version 1.0.0",
+  "title": "Fleet Manager Application Manifest",
+  "description": "Schema for Fleet Manager Application manifests version 1.0.0",
   "type": "object",
   "required": ["type", "version", "metadata", "spec"],
   "properties": {
