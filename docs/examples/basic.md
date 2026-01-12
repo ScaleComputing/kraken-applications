@@ -1,10 +1,10 @@
 # Basic Examples
 
-This section provides fundamental examples of Kraken manifests based on actual examples from this repository. Each example demonstrates core concepts and patterns used in real deployments.
+This section provides fundamental examples of Fleet Manager Application manifests based on actual examples from this repository. Each example demonstrates core concepts and patterns used in real deployments.
 
 ## Simple Virtual Machine
 
-The most basic Kraken manifest creates a single virtual machine. This example is based on the `simple-virdomain/manifest.yaml` in this repository.
+The most basic application manifest creates a single virtual machine. This example is based on the `simple-virdomain/manifest.yaml` in this repository.
 
 ### Simple VirDomain Manifest
 
@@ -44,7 +44,6 @@ spec:
             type: virtio
         
         tags:
-          - kraken
           - test
         
         state: running
