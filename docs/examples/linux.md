@@ -88,13 +88,13 @@ spec:
     - name: "ubuntu-server"
       type: "virtual_disk"
       format: "raw"
-      url: "https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img"
+      url: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img"
   
   resources:
     - type: "virdomain"
       name: "ubuntu-server"
       spec:
-        description: "Ubuntu 22.04 LTS server"
+        description: "Ubuntu 24.04 LTS server"
         cpu: 2
         memory: "4 GiB"
         machine_type: "uefi"
@@ -164,7 +164,7 @@ spec:
 
 Enterprise Linux configuration with Red Hat ecosystem tools.
 
-### CentOS Stream Manifest (Note: QCOW2 support is coming in a later HyperCore release. For now, swap in an ISO or rw format centos image)
+### CentOS Stream Manifest (Note: QCOW2 support is coming in a later HyperCore release. For now, swap in an ISO or raw format centos image)
 
 ```yaml title="centos-stream.yaml"
 type: Application
