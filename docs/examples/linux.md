@@ -88,7 +88,7 @@ spec:
     - name: "ubuntu-server"
       type: "virtual_disk"
       format: "raw"
-      url: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img"
+      url: "https://storage.googleapis.com/demo-bucket-lfm/ubuntu-24.04-qga-qemu.img"
   
   resources:
     - type: "virdomain"
