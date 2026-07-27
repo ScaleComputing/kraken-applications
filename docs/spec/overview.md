@@ -146,7 +146,7 @@ resources:
 ### Asset Requirements
 
 - **URLs**: Must be publicly accessible HTTPS URLs
-- **Formats**: Supported formats: raw, iso (support for .qcow2, .vmdk, etc. coming by end of 2025)
+- **Formats**: Supported formats: raw, iso (support for .qcow2, .vmdk, etc. are on the roadmap)
 - **Size**: Assets should be optimized for network transfer
 
 ## Schema Validation
